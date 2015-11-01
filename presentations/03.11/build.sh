@@ -1,4 +1,5 @@
-#!/bin/bash
+#!/bin/sh
+set -e
 
 latexmk -output-directory=./tmp -pdf presentation.tex
-mv.exe tmp/presentation.pdf .
+cp tmp/presentation.pdf .
