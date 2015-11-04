@@ -7,3 +7,5 @@
 *.snm
 *.toc
 *.pdf
+.idea/
+__pycache__/
