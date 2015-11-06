@@ -9,3 +9,4 @@
 *.pdf
 .idea/
 __pycache__/
+*_ui.py
