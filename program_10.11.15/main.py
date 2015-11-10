@@ -15,6 +15,7 @@ data = np.genfromtxt('January.txt', dtype=[('date', '|S19'), ('small', 'i8'), ('
                      names=["date", "small", "large"])
 date_as_byte = data['date']
 date = []
+
 # Wandelt die Byte Daten aus data['date'] in Strings um
 for i in range(0, len(date_as_byte)):
     date.append(date_as_byte[i].decode("utf-8"))
