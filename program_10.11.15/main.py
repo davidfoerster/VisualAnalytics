@@ -5,20 +5,30 @@ import pyqtgraph as pg
 import numpy as np
 import sys
 
-'''
-dtype legt den Datentyp der Spalten fest -> |S19 erzeugt aber keinen String sondern einen Bytestrom vom Format b'2014-01-01 00:00:00'
-names=["date", "small", "large"] legt die Namen der Spalten fest
 
-Weil die Ladedauer sehr hoch ist, wird erstmal nur der Datensatz mit allen Messdaten aus Januar verwendet. Beachtet dies bei den Filtern.
-'''
-data = np.genfromtxt('January.txt', dtype=[('date', '|S19'), ('small', 'i8'), ('large', 'i8')], delimiter=';',
-                     names=["date", "small", "large"])
+def _main(*args):
+    """
+    dtype legt den Datentyp der Spalten fest -> |S19 erzeugt aber keinen String sondern einen Bytestrom vom Format b'2014-01-01 00:00:00'
+    names=["date", "small", "large"] legt die Namen der Spalten fest
 
-# Wandelt die Byte Daten aus data['date'] in Strings um
-data['date'] = map(bytes.decode, data['date'])
+    Weil die Ladedauer sehr hoch ist, wird erstmal nur der Datensatz mit allen Messdaten aus Januar verwendet. Beachtet dies bei den Filtern.
+    """
 
-# x_var = data['small']
-# y_var = data['large']
+    data_path = args[0] if args else 'January.txt'
+    data = np.genfromtxt(data_path,
+        dtype=[('date', '|S19'), ('small', 'i8'), ('large', 'i8')], delimiter=';',
+        names=["date", "small", "large"])
+
+    # Wandelt die Byte Daten aus data['date'] in Strings um
+    data['date'] = map(bytes.decode, data['date'])
+
+    # x_var = data['small']
+    # y_var = data['large']
+
+    app = QApplication(sys.argv)
+    myplot = Plot(data)
+    app.exec_()
+
 
 # TODO: was ist mit Schaltjahren?
 # Liste mit Tagen und dazu gehörenden Datum zB Tag 365 ist der 2014-12-31
@@ -33,25 +43,22 @@ class MainWindow(QMainWindow, window_ui.Ui_MainWindow):
 
 
 class Plot:
-    def __init__(self):
-        self.form = MainWindow()
-        self.form.move(300, 300)
-        self.scatterpoints = pg.ScatterPlotItem(data['small'], data['large'], pen=None, symbol='o', autoDownsample=True)
-        self.form.graphicsView.addItem(self.scatterpoints)
-        self.form.graphicsView.setLabel(axis='left', text='large')
-        self.form.graphicsView.setLabel(axis='bottom', text='small')
-        self.form.show()
-        self.tooltip = pg.TextItem(text='', color=(176, 127, 255), anchor=(1, 1))
-        self.form.graphicsView.addItem(self.tooltip)
-        self.tooltip.hide()
-        self.scatterpoints.scene().sigMouseMoved.connect(self.onMove)
-        self.form.btnFilter.clicked.connect(self.onfilterWindow)
-        self.form.btnQuit.clicked.connect(self.onQuit)
     """
     Plottet die Daten, welche in 'data' stehen.
     Filter-Button öffnet das Filter-Fenster
     Quit-Button schließt die Anwendung
     """
+
+
+    def __init__(self, data=None):
+        self.data = data
+        self.form = None
+        self.scatterpoints = None
+        self.tooltip = None
+
+        if data is not None:
+            self.plotFilterRange(data['small'], data['large'], autoDownsample=True)
+
 
     def onMove(self, pos):
         act_pos = self.scatterpoints.mapFromScene(pos)
@@ -172,12 +179,12 @@ class Plot:
     def filterMonth(self, timeInterval):
         small = []
         large = []
-        date = data['date']
+        date = self.data['date']
         for s in date:
             if timeInterval in s:
                 index = date.index(s)
-                small.append(str(data[index][1]))
-                large.append(str(data[index][2]))
+                small.append(str(self.data[index][1]))
+                large.append(str(self.data[index][2]))
 
         if len(small) > 0:
             self.plotFilterRange(small, large)
@@ -195,18 +202,8 @@ class Plot:
 
         new_data = np.genfromtxt(filter, dtype=[('date', '|S19'), ('small', 'i8'), ('large', 'i8')], delimiter=';',
                                  names=["date", "small", "large"])
+        self.plotFilterRange(new_data['small'], new_data['large'])
         self.scatterpoints = pg.ScatterPlotItem(new_data['small'], new_data['large'], pen=None, symbol='o')
-        # self.scatterpoints = pg.ScatterPlotItem(small, large, pen=None, symbol='o')
-        self.form.graphicsView.addItem(self.scatterpoints)
-        self.form.graphicsView.setLabel(axis='left', text='large')
-        self.form.graphicsView.setLabel(axis='bottom', text='small')
-        self.form.show()
-        self.tooltip = pg.TextItem(text='', color=(176, 127, 255), anchor=(1, 1))
-        self.form.graphicsView.addItem(self.tooltip)
-        self.tooltip.hide()
-        self.scatterpoints.scene().sigMouseMoved.connect(self.onMove)
-        self.form.btnFilter.clicked.connect(self.onfilterWindow)
-        self.form.btnQuit.clicked.connect(self.onQuit)
 
 
     def onCancel(self):
@@ -254,7 +251,7 @@ class Plot:
         print(fromDate)
         print(toDate)
         isStarted = False
-        date = data['date']
+        date = self.data['date']
         for s in date:
             if toDate in s:
                 break
@@ -262,7 +259,7 @@ class Plot:
                 if (fromDate in s) or isStarted:
                     isStarted = True
                     index = date.index(s)
-                    res = [data[index][0], str(data[index][1]), str(data[index][2])]
+                    res = [self.data[index][0], str(self.data[index][1]), str(self.data[index][2])]
                     small.append(res[1])
                     large.append(res[2])
                     plotDays.append(res)
@@ -272,10 +269,10 @@ class Plot:
         else:
             print("Keine Daten: Plot2")
 
-    def plotFilterRange(self, small, large):
+    def plotFilterRange(self, small, large, **kwargs):
         self.form = MainWindow()
         self.form.move(300, 300)
-        self.scatterpoints = pg.ScatterPlotItem(small, large, pen=None, symbol='o')
+        self.scatterpoints = pg.ScatterPlotItem(small, large, pen=None, symbol='o', **kwargs)
         self.form.graphicsView.addItem(self.scatterpoints)
         self.form.graphicsView.setLabel(axis='left', text='large')
         self.form.graphicsView.setLabel(axis='bottom', text='small')
@@ -319,6 +316,5 @@ class Plot:
         self.wid.labTo.setText(chooseDate)
 
 
-app = QApplication(sys.argv)
-myplot = Plot()
-app.exec_()
+if __name__ == '__main__':
+    _main(*sys.argv[1:])
