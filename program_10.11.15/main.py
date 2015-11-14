@@ -32,11 +32,6 @@ class MainWindow(QMainWindow, window_ui.Ui_MainWindow):
         self.setupUi(self)
 
 
-'''
-Plottet die Daten, welche in 'data' stehen.
-Filter-Button öffnet das Filter-Fenster
-Quit-Button schließt die Anwendung
-'''
 class Plot:
     def __init__(self):
         self.form = MainWindow()
@@ -52,6 +47,11 @@ class Plot:
         self.scatterpoints.scene().sigMouseMoved.connect(self.onMove)
         self.form.btnFilter.clicked.connect(self.onfilterWindow)
         self.form.btnQuit.clicked.connect(self.onQuit)
+    """
+    Plottet die Daten, welche in 'data' stehen.
+    Filter-Button öffnet das Filter-Fenster
+    Quit-Button schließt die Anwendung
+    """
 
     def onMove(self, pos):
         act_pos = self.scatterpoints.mapFromScene(pos)
@@ -64,14 +64,16 @@ class Plot:
         else:
             self.tooltip.hide()
 
-    '''
-    Das Filter-Fenster: besteht aus tabWidget mit 2 Reitern
-     Reiter Filter by Month/Day: treeWidget mit der Filterung von Monat und Tag. Ohne Tagangabe wird der komplette Monat gewählt
-     Reiter Filter by Range: Über zwei Slider kann ein Startdatum und Enddatum ausgewählt werden
-    OK-Button funktioniert nur, wenn ein Filter gewählt wurde
-    Cancel-Button schließt das Filter-Fenster
-    '''
+
     def onfilterWindow(self):
+        """
+        Das Filter-Fenster: besteht aus tabWidget mit 2 Reitern
+         Reiter Filter by Month/Day: treeWidget mit der Filterung von Monat und Tag. Ohne Tagangabe wird der komplette Monat gewählt
+         Reiter Filter by Range: Über zwei Slider kann ein Startdatum und Enddatum ausgewählt werden
+        OK-Button funktioniert nur, wenn ein Filter gewählt wurde
+        Cancel-Button schließt das Filter-Fenster
+        """
+
         print("Filter")
         self.widForm = QWidget()
         self.widForm.move(1110, 300)
@@ -117,13 +119,15 @@ class Plot:
                     childNodeText = "0" + childNodeText
                 self.wid.labDay.setText(childNodeText)
 
-    '''
-    Sucht die Messdaten welche im Filter 'Filter by Month/Day' ausgewählt wurden
-    1. onOkMonth: Baue Suchstring, bestehend aus Monat und Tag, zusammen
-    2. filterMonth: Suche im Datensatz nach alle zutreffenden Messdaten
-    3. plot(self, filter): Plotten der Daten
-    '''
+
     def onOkMonth(self):
+        """
+        Sucht die Messdaten welche im Filter 'Filter by Month/Day' ausgewählt wurden
+        1. onOkMonth: Baue Suchstring, bestehend aus Monat und Tag, zusammen
+        2. filterMonth: Suche im Datensatz nach alle zutreffenden Messdaten
+        3. plot(self, filter): Plotten der Daten
+        """
+
         if len(self.wid.labMonth.text()) > 1:
             strMonth = self.wid.labMonth.text()
             if strMonth == 'January':
@@ -182,14 +186,13 @@ class Plot:
             msgBox.setText("No data exists for the filter!")
             msgBox.exec_()
 
-    '''
-    Kann verwendet werden, wenn ein kompletter Monat ausgewählt wurde
-    Parameter 'filter' muss eine Datei sein
-    '''
+
     def plot(self, filter):
-        # def plot(self, small, large):
-        self.form = MainWindow()
-        self.form.move(300, 300)
+        """
+        Kann verwendet werden, wenn ein kompletter Monat ausgewählt wurde
+        Parameter 'filter' muss eine Datei sein
+        """
+
         new_data = np.genfromtxt(filter, dtype=[('date', '|S19'), ('small', 'i8'), ('large', 'i8')], delimiter=';',
                                  names=["date", "small", "large"])
         self.scatterpoints = pg.ScatterPlotItem(new_data['small'], new_data['large'], pen=None, symbol='o')
@@ -205,26 +208,33 @@ class Plot:
         self.form.btnFilter.clicked.connect(self.onfilterWindow)
         self.form.btnQuit.clicked.connect(self.onQuit)
 
-    '''
-    Jeder Cancel-Button blendet das Filter-Fenster aus
-    '''
+
     def onCancel(self):
+        """
+        Jeder Cancel-Button blendet das Filter-Fenster aus
+        """
+
         self.widForm.close()
 
-    '''
-    Quit-Button schließt die Anwendung
-    '''
+
+
     def onQuit(self):
+        """
+        Quit-Button schließt die Anwendung
+        """
+
         self.widForm.close()
         sys.exit()
 
-    '''
-    Sucht alle Messdaten in gegeben Zeitraum (von 'fromValue' bis 'toValue')
-    1. onOkFilterSlider: Prüfe ob fromValue < toValue ist, ansonsten tausche die Werte und ändere Slider
-       danach suche alle Messdaten im Zeitraum
-    2. plotFilterRange(self, small, large): Plotten der Daten. Small/Large = Liste allen kleinen/großen Partikel
-    '''
+
     def onOkFilterSlider(self):
+        """
+        Sucht alle Messdaten in gegeben Zeitraum (von 'fromValue' bis 'toValue')
+        1. onOkFilterSlider: Prüfe ob fromValue < toValue ist, ansonsten tausche die Werte und ändere Slider
+           danach suche alle Messdaten im Zeitraum
+        2. plotFilterRange(self, small, large): Plotten der Daten. Small/Large = Liste allen kleinen/großen Partikel
+        """
+
         fromValue = int(self.wid.sliderFrom.value())
         toValue = int(self.wid.sliderTo.value())
         if fromValue > toValue:
@@ -277,28 +287,33 @@ class Plot:
         self.form.btnFilter.clicked.connect(self.onfilterWindow)
         self.form.btnQuit.clicked.connect(self.onQuit)
 
-    '''
-    Wandelt die Byte-Daten in Strings um
-    '''
+
     def getDateFromDay(self, chooseDay):
+        """
+        Wandelt die Byte-Daten in Strings um
+        """
+
         sliderDate = day['sliderDate']
         chooseDateByte = sliderDate[chooseDay]
         chooseDate = chooseDateByte.decode("utf-8")
         return chooseDate
 
-    '''
-    Setzen des From-Sliders bei Änderung
-    '''
+
     def setFrom(self):
+        """
+        Setzen des From-Sliders bei Änderung
+        """
         chooseDay = self.wid.sliderFrom.value()
         chooseDate = self.getDateFromDay(chooseDay)
         print(chooseDate)
         self.wid.labFrom.setText(chooseDate)
 
-    '''
-    Setzen des To-Sliders bei Änderung
-    '''
+
     def setTo(self):
+        """
+        Setzen des To-Sliders bei Änderung
+        """
+
         chooseDay = self.wid.sliderTo.value()
         chooseDate = self.getDateFromDay(chooseDay)
         self.wid.labTo.setText(chooseDate)
