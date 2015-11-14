@@ -13,13 +13,10 @@ Weil die Ladedauer sehr hoch ist, wird erstmal nur der Datensatz mit allen Messd
 '''
 data = np.genfromtxt('January.txt', dtype=[('date', '|S19'), ('small', 'i8'), ('large', 'i8')], delimiter=';',
                      names=["date", "small", "large"])
-date_as_byte = data['date']
-date = []
 
 # Wandelt die Byte Daten aus data['date'] in Strings um
-for i in range(0, len(date_as_byte)):
-    date.append(date_as_byte[i].decode("utf-8"))
-data['date'] = date
+data['date'] = map(bytes.decode, data['date'])
+
 # x_var = data['small']
 # y_var = data['large']
 
@@ -171,6 +168,7 @@ class Plot:
     def filterMonth(self, timeInterval):
         small = []
         large = []
+        date = data['date']
         for s in date:
             if timeInterval in s:
                 index = date.index(s)
@@ -246,6 +244,7 @@ class Plot:
         print(fromDate)
         print(toDate)
         isStarted = False
+        date = data['date']
         for s in date:
             if toDate in s:
                 break
