@@ -9,7 +9,7 @@ import sys
 dtype legt den Datentyp der Spalten fest -> |S19 erzeugt aber keinen String sondern einen Bytestrom vom Format b'2014-01-01 00:00:00'
 names=["date", "small", "large"] legt die Namen der Spalten fest
 
-Weil die Ladedauert sehr hoch ist, wird erstmal nur der Datensatz mit allen Messdaten aus Januar verwendet. Beachtet dies bei den Filtern.
+Weil die Ladedauer sehr hoch ist, wird erstmal nur der Datensatz mit allen Messdaten aus Januar verwendet. Beachtet dies bei den Filtern.
 '''
 data = np.genfromtxt('January.txt', dtype=[('date', '|S19'), ('small', 'i8'), ('large', 'i8')], delimiter=';',
                      names=["date", "small", "large"])
@@ -116,7 +116,7 @@ class Plot:
                 self.wid.labMonth.setText(childNodeText)
                 print(len(self.wid.labMonth.text()))
             else:
-                if (len(childNodeText) == 1):
+                if len(childNodeText) == 1:
                     childNodeText = "0" + childNodeText
                 self.wid.labDay.setText(childNodeText)
 
@@ -129,42 +129,42 @@ class Plot:
     def onOkMonth(self):
         if len(self.wid.labMonth.text()) > 1:
             strMonth = self.wid.labMonth.text()
-            if (strMonth == 'January'):
+            if strMonth == 'January':
                 print("January")
                 self.filterMonth('2014-01' + '-' + self.wid.labDay.text())
 
             # Nur Januar funktioniert bisher zu Testzwecken
-            if (strMonth == 'February'):
+            elif strMonth == 'February':
                 print("February")
                 self.plot('daten-sehr-klein.dat')
-            if (strMonth == 'March'):
+            elif strMonth == 'March':
                 print("March")
                 self.filterMonth('2014-03' + '-' + self.wid.labDay.text())
-            if (strMonth == 'April'):
+            elif strMonth == 'April':
                 print("April")
                 self.filterMonth('2014-04')
-            if (strMonth == 'May'):
+            elif strMonth == 'May':
                 print("May")
                 self.filterMonth('2014-05')
-            if (strMonth == 'June'):
+            elif strMonth == 'June':
                 print("June")
                 self.filterMonth('2014-06')
-            if (strMonth == 'July'):
+            elif strMonth == 'July':
                 print("July")
                 self.filterMonth('2014-07')
-            if (strMonth == 'August'):
+            elif strMonth == 'August':
                 print("August")
                 self.filterMonth('2014-08')
-            if (strMonth == 'September'):
+            elif strMonth == 'September':
                 print("September")
                 self.filterMonth('2014-09')
-            if (strMonth == 'October'):
+            elif strMonth == 'October':
                 print("October")
                 self.filterMonth('2014-10')
-            if (strMonth == 'November'):
+            elif strMonth == 'November':
                 print("November")
                 self.filterMonth('2014-11')
-            if (strMonth == 'December'):
+            elif strMonth == 'December':
                 print("December")
                 self.filterMonth('2014-12')
 
@@ -174,15 +174,10 @@ class Plot:
         for s in date:
             if timeInterval in s:
                 index = date.index(s)
-                res = []
-                res.append(data[index][0])
-                res.append(str(data[index][1]))
-                res.append(str(data[index][2]))
-
                 small.append(str(data[index][1]))
                 large.append(str(data[index][2]))
 
-        if (len(small) > 0):
+        if len(small) > 0:
             self.plotFilterRange(small, large)
         else:
             msgBox = QMessageBox()
@@ -191,7 +186,7 @@ class Plot:
 
     '''
     Kann verwendet werden, wenn ein kompletter Monat ausgewählt wurde
-    Paramter 'filter' muss eine Datei sein
+    Parameter 'filter' muss eine Datei sein
     '''
     def plot(self, filter):
         # def plot(self, small, large):
@@ -234,7 +229,7 @@ class Plot:
     def onOkFilterSlider(self):
         fromValue = int(self.wid.sliderFrom.value())
         toValue = int(self.wid.sliderTo.value())
-        if (fromValue > toValue):
+        if fromValue > toValue:
             fromValue = toValue
             toValue = self.wid.sliderFrom.value()
             self.wid.sliderFrom.setValue(fromValue)
@@ -250,23 +245,17 @@ class Plot:
         large = []
         print(fromDate)
         print(toDate)
-        index = 0
         isStarted = False
         for s in date:
             if toDate in s:
-                isStarted = False
                 break
             else:
-                if ((fromDate in s) or isStarted):
+                if (fromDate in s) or isStarted:
                     isStarted = True
                     index = date.index(s)
-                    res = []
-                    res.append(data[index][0])
-                    res.append(str(data[index][1]))
-                    res.append(str(data[index][2]))
-
-                    small.append(str(data[index][1]))
-                    large.append(str(data[index][2]))
+                    res = [data[index][0], str(data[index][1]), str(data[index][2])]
+                    small.append(res[1])
+                    large.append(res[2])
                     plotDays.append(res)
 
         if (len(small) > 0):
