@@ -23,7 +23,7 @@ data['date'] = date
 # x_var = data['small']
 # y_var = data['large']
 
-
+# TODO: was ist mit Schaltjahren?
 # Liste mit Tagen und dazu gehörenden Datum zB Tag 365 ist der 2014-12-31
 day = np.genfromtxt('DateInDays.txt', dtype=[('day', '|i8'), ('date', 'S10')], delimiter=',',
                     names=["sliderDay", "sliderDate"])
@@ -44,7 +44,7 @@ class Plot:
     def __init__(self):
         self.form = MainWindow()
         self.form.move(300, 300)
-        self.scatterpoints = pg.ScatterPlotItem(data['small'], data['large'], pen=None, symbol='o')
+        self.scatterpoints = pg.ScatterPlotItem(data['small'], data['large'], pen=None, symbol='o', autoDownsample=True)
         self.form.graphicsView.addItem(self.scatterpoints)
         self.form.graphicsView.setLabel(axis='left', text='large')
         self.form.graphicsView.setLabel(axis='bottom', text='small')
@@ -216,12 +216,13 @@ class Plot:
     Jeder Cancel-Button blendet das Filter-Fenster aus
     '''
     def onCancel(self):
-        self.widForm.hide()
+        self.widForm.close()
 
     '''
     Quit-Button schließt die Anwendung
     '''
     def onQuit(self):
+        self.widForm.close()
         sys.exit()
 
     '''
