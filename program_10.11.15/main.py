@@ -65,23 +65,26 @@ class Plot:
     def onMove(self, scene_pos):
         pos = self.scatterpoints.mapFromScene(scene_pos)
 
-        ssx = ssy = self.scatterpoints.opts['size'] * 0.5
+        ss = self.scatterpoints.opts['size']
+        ssx = ssy = ss * 0.5
         if self.scatterpoints.opts['pxMode']:
             pv = self.scatterpoints.pixelVectors()
             ssx *= pv[0].x()
             ssy *= pv[1].y()
+        else:
+            pv = None
 
         nearest_neighbor_idx = self.data_tree.query([[pos.x(), pos.y()]], distance_upper_bound=max(ssx, ssy))[1][0]
 
         if 0 <= nearest_neighbor_idx < self.data.size:
             s = self.scatterpoints.data[nearest_neighbor_idx]
 
-            ss = s['size']
-            if ss > 0:
+            ss2 = s['size']
+            if ss2 > 0 and ss2 != ss:
+                ss = ss2
                 assert ss <= self.scatterpoints.opts['size']
                 ssx = ssy = ss * 0.5
-                if self.scatterpoints.opts['pxMode']:
-                    pv = self.scatterpoints.pixelVectors()
+                if pv is not None:
                     ssx *= pv[0].x()
                     ssy *= pv[1].y()
 
