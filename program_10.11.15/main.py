@@ -16,11 +16,11 @@ def _main(*args):
 
     data_path = args[0] if args else 'January.txt'
     data = np.genfromtxt(data_path,
-        dtype=[('date', '|S19'), ('small', 'i8'), ('large', 'i8')], delimiter=';',
-        names=["date", "small", "large"])
+                         dtype=[('date', '|S19'), ('small', 'i8'), ('large', 'i8')], delimiter=';',
+                         names=["date", "small", "large"])
 
     # Wandelt die Byte Daten aus data['date'] in Strings um
-    data['date'] = map(bytes.decode, data['date'])
+    #data['date'] = map(bytes.decode, data['date'])
 
     # x_var = data['small']
     # y_var = data['large']
@@ -49,16 +49,16 @@ class Plot:
     Quit-Button schließt die Anwendung
     """
 
-
     def __init__(self, data=None):
         self.data = data
         self.form = None
         self.scatterpoints = None
         self.tooltip = None
+        self.scene = QGraphicsScene()
+        self.pen = QPen(QColor(0, 0, 255))
 
         if data is not None:
-            self.plotFilterRange(data['small'], data['large'], autoDownsample=True)
-
+            self.plotFilterRange(data['small'], data['large'], data['date'], autoDownsample=True)
 
     def onMove(self, pos):
         act_pos = self.scatterpoints.mapFromScene(pos)
@@ -70,7 +70,6 @@ class Plot:
             self.tooltip.show()
         else:
             self.tooltip.hide()
-
 
     def onfilterWindow(self):
         """
@@ -126,7 +125,6 @@ class Plot:
                     childNodeText = "0" + childNodeText
                 self.wid.labDay.setText(childNodeText)
 
-
     def onOkMonth(self):
         """
         Sucht die Messdaten welche im Filter 'Filter by Month/Day' ausgewählt wurden
@@ -180,19 +178,20 @@ class Plot:
         small = []
         large = []
         date = self.data['date']
+        dates = []
         for s in date:
             if timeInterval in s:
                 index = date.index(s)
+                dates.append(str(self.data[index][0]))
                 small.append(str(self.data[index][1]))
                 large.append(str(self.data[index][2]))
 
         if len(small) > 0:
-            self.plotFilterRange(small, large)
+            self.plotFilterRange(small, large, dates)
         else:
             msgBox = QMessageBox()
             msgBox.setText("No data exists for the filter!")
             msgBox.exec_()
-
 
     def plot(self, filter):
         """
@@ -205,15 +204,12 @@ class Plot:
         self.plotFilterRange(new_data['small'], new_data['large'])
         self.scatterpoints = pg.ScatterPlotItem(new_data['small'], new_data['large'], pen=None, symbol='o')
 
-
     def onCancel(self):
         """
         Jeder Cancel-Button blendet das Filter-Fenster aus
         """
 
         self.widForm.close()
-
-
 
     def onQuit(self):
         """
@@ -222,7 +218,6 @@ class Plot:
 
         self.widForm.close()
         sys.exit()
-
 
     def onOkFilterSlider(self):
         """
@@ -248,6 +243,7 @@ class Plot:
         plotDays = []
         small = []
         large = []
+        dates = []
         print(fromDate)
         print(toDate)
         isStarted = False
@@ -260,18 +256,31 @@ class Plot:
                     isStarted = True
                     index = date.index(s)
                     res = [self.data[index][0], str(self.data[index][1]), str(self.data[index][2])]
+                    dates.append(res[0])
                     small.append(res[1])
                     large.append(res[2])
                     plotDays.append(res)
 
         if (len(small) > 0):
-            self.plotFilterRange(small, large)
+            self.plotFilterRange(small, large, dates)
         else:
             print("Keine Daten: Plot2")
 
-    def plotFilterRange(self, small, large, **kwargs):
+    def plotFilterRange(self, small, large, dates, **kwargs):
         self.form = MainWindow()
         self.form.move(300, 300)
+        self.form.timeline.setScene(self.scene)
+        self.form.timeline.setSceneRect(0, 0, 710, 10)
+
+        dayIndices = list(map(lambda x: x[1], day))
+        dayIndex = -1
+        for d in dates:
+            d = d[0:10]  # b'2014-01-01 00:00:00' => b'2014-01-01'
+            if dayIndex != dayIndices.index(d):
+                dayIndex = dayIndices.index(d)
+                rect = self.scene.addRect(2*dayIndex, 1, 1, 10, self.pen)
+                rect.setToolTip(bytes.decode(d))
+
         self.scatterpoints = pg.ScatterPlotItem(small, large, pen=None, symbol='o', **kwargs)
         self.form.graphicsView.addItem(self.scatterpoints)
         self.form.graphicsView.setLabel(axis='left', text='large')
@@ -284,7 +293,6 @@ class Plot:
         self.form.btnFilter.clicked.connect(self.onfilterWindow)
         self.form.btnQuit.clicked.connect(self.onQuit)
 
-
     def getDateFromDay(self, chooseDay):
         """
         Wandelt die Byte-Daten in Strings um
@@ -295,7 +303,6 @@ class Plot:
         chooseDate = chooseDateByte.decode("utf-8")
         return chooseDate
 
-
     def setFrom(self):
         """
         Setzen des From-Sliders bei Änderung
@@ -304,7 +311,6 @@ class Plot:
         chooseDate = self.getDateFromDay(chooseDay)
         print(chooseDate)
         self.wid.labFrom.setText(chooseDate)
-
 
     def setTo(self):
         """
