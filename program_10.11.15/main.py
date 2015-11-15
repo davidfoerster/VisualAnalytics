@@ -78,6 +78,8 @@ class Plot:
 
         if 0 <= nearest_neighbor_idx < self.data.size:
             s = self.scatterpoints.data[nearest_neighbor_idx]
+            sx = s['x']
+            sy = s['y']
 
             ss2 = s['size']
             if ss2 > 0 and ss2 != ss:
@@ -88,8 +90,8 @@ class Plot:
                     ssx *= pv[0].x()
                     ssy *= pv[1].y()
 
-            if abs(pos.x() - s['x']) <= ssx and abs(pos.y() - s['y']) <= ssy:
-                self.tooltip.setText('small=%d\nlarge=%d' % (pos.x(), pos.y()))
+            if abs(pos.x() - sx) <= ssx and abs(pos.y() - sy) <= ssy:
+                self.tooltip.setText('small=%d\nlarge=%d' % (sx, sy))
                 # anchor des Tooltips anpassen, sodass Tooltip nicht aus dem Graph fällt
                 self.tooltip.setPos(pos)
                 self.tooltip.show()
