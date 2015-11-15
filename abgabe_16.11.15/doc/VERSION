@@ -1,0 +1,18 @@
+Entwicklungsarbeit & Bugs ['+' Erweiterungen/Verbeseerungen, '-' Bugs/Hindernisse]
+
+- 04.11
+    + statischer Testplot des kompletten Datensatzes in einem Fenster
+    - Plot vergrößert sich nicht mit Fenster
+    - mehrere Sekunden Berechnungsdauer um z.B. Fenster zu verschieben
+
+- 06.11
+    + Hinzufügen eines Tooltips beim Hovern über einem Datenpunkt mit dem Mauszeiger
+    - langsames Anzeigen und anschließendes Verstecken des Tooltips
+
+- 10.11
+    + Testen des Programms mit verkleinertem Datensatz
+    + Aufgabe 6
+    + Filter eines Monats bzw. Tages bzw. Zeitraum einstellbar über zwei Slider
+    + einzelner Filterdialog
+    - Fensterdialog schließt sich nicht mit Hauptfenster
+

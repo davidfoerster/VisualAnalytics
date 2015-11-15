@@ -1,0 +1,13 @@
+- Compiler & Versionen
+    - Python 3.4.3
+    - GNU Make 4.1
+
+- externe Bibliotheken & Versionen
+    - Numpy 1.9.2
+    - Scipy 0.15.1
+    - PyQt 4
+    - PyQtGraph 0.9.10
+
+- eigene Leistung
+    - grafische Oberfläche gebaut
+    - 
