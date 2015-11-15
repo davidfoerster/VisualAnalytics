@@ -415,6 +415,7 @@ class Plot:
         self.form.graphicsView.addItem(self.scatterpoints)
         self.form.graphicsView.setLabel(axis='left', text='large')
         self.form.graphicsView.setLabel(axis='bottom', text='small')
+        self.form.graphicsView.showGrid(True, True)
         self.form.show()
         self.tooltip = pg.TextItem(text='', color=(176, 127, 255), anchor=(1, 1))
         self.form.graphicsView.addItem(self.tooltip)
