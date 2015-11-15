@@ -1,5 +1,5 @@
 from PyQt4.QtGui import *
-import widgetwin
+import widgetwin_ui
 import window_ui
 import pyqtgraph as pg
 import numpy as np
@@ -110,7 +110,7 @@ class Plot:
         print("Filter")
         self.widForm = QWidget()
         self.widForm.move(1110, 300)
-        self.wid = widgetwin.Ui_Form()
+        self.wid = widgetwin_ui.Ui_Form()
         self.wid.setupUi(self.widForm)
 
         # Erzeuge Liste mit allen eingetragenen Monaten aus dem treeWidget
