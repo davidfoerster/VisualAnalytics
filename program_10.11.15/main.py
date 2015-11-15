@@ -346,6 +346,38 @@ class Plot:
         self.wid.labFrom.setText(fromDate)
         self.wid.labTo.setText(toDate)
 
+
+
+        isDeletePoint = True #Alle Punkte die nicht im Filterzeitraum liegen, werden aus der Datenmenge gelöscht
+        self.undo_data2 = self.undo_data1
+        self.undo_data1 = self.new_data
+        self.new_data = self.original_data
+        index = 0
+        for s in self.new_data:
+            decode_date = s[0].decode("utf-8")
+
+            if((fromDate in decode_date) & isDeletePoint):
+                isDeletePoint = False
+
+            if((toDate in decode_date) & (not isDeletePoint)):
+                isDeletePoint = True
+
+            if(isDeletePoint):
+                self.new_data = np.delete( self.new_data, index)
+                index=index-1 #new_data wird kleiner, darum darf der Index nicht wachsen.
+
+            index = index+1
+        if(len(self.new_data) > 0):
+            print("len new_data: ",len(self.new_data))
+            self.data = self.new_data
+            if len(self.data)>0:
+                self.plotFilterRange(self.data['small'], self.data['large'], self.data['date'], autoDownsample=True)
+        else:
+            msgBox = QMessageBox()
+            msgBox.setText("No data exists for the filter!")
+            msgBox.exec_()
+
+        '''
         plotDays = []
         small = []
         large = []
@@ -353,8 +385,8 @@ class Plot:
         print(fromDate)
         print(toDate)
         isStarted = False
-        date = self.data['date']
-        for s in date:
+
+        for s in self.data['date']:
             if toDate in s:
                 break
             else:
@@ -371,6 +403,11 @@ class Plot:
             self.plotFilterRange(small, large, dates)
         else:
             print("Keine Daten: Plot2")
+
+        '''
+
+
+
 
     def plotFilterRange(self, small, large, dates, **kwargs):
 
