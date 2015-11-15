@@ -21,7 +21,9 @@ def _main(*args):
                          names=["date", "small", "large"])
 
     # Wandelt die Byte Daten aus data['date'] in Strings um
-    #data['date'] = map(bytes.decode, data['date'])
+    #data['date'] = list(map(bytes.decode, data['date']))
+    #print(data['date'][0])
+
 
     # x_var = data['small']
     # y_var = data['large']
@@ -50,19 +52,32 @@ class Plot:
     Quit-Button schließt die Anwendung
     """
 
+
     def __init__(self, data=None):
         self.data = data
-        self.data_tree = scipy.spatial.cKDTree(np.vstack((data['small'], data['large'])).transpose())
+        #self.data_tree = scipy.spatial.cKDTree(np.vstack((data['small'], data['large'])).transpose())
         self.form = None
         self.scatterpoints = None
         self.tooltip = None
         self.scene = QGraphicsScene()
         self.pen = QPen(QColor(0, 0, 255))
 
+        self.original_data = self.data
+        self.new_data = self.data
+        self.undo_data1 = self.new_data
+        self.undo_data2 = self.undo_data1
+        #print("len: ",len(self.new_data))
+        self.selectedPoints = []
+
+        #Globale Variablen für Average
+        self.average = ()
+
         if data is not None:
             self.plotFilterRange(data['small'], data['large'], data['date'], autoDownsample=True)
 
     def onMove(self, scene_pos):
+        self.selectedPoint = ()
+        tooltipDate = ''
         pos = self.scatterpoints.mapFromScene(scene_pos)
 
         ss = self.scatterpoints.opts['size']
@@ -80,6 +95,7 @@ class Plot:
             s = self.scatterpoints.data[nearest_neighbor_idx]
             sx = s['x']
             sy = s['y']
+            date_of_point = self.data['date'][nearest_neighbor_idx]
 
             ss2 = s['size']
             if ss2 > 0 and ss2 != ss:
@@ -91,13 +107,41 @@ class Plot:
                     ssy *= pv[1].y()
 
             if abs(pos.x() - sx) <= ssx and abs(pos.y() - sy) <= ssy:
-                self.tooltip.setText('small=%d\nlarge=%d' % (sx, sy))
-                # anchor des Tooltips anpassen, sodass Tooltip nicht aus dem Graph fällt
+                tooltipDate = date_of_point.decode("utf-8")
+                self.selectedPoint = (date_of_point, int(sx), int(sy))
+                #print(date_of_point,sx,sy)
+                if self.selectedPoint not in self.selectedPoints:
+                    self.selectedPoints.append(self.selectedPoint)
+                    self.average = self.calculateAverage(self.selectedPoints)
+
+                self.tooltip.setText('small={0:d}\nlarge={1:d}\ndate={2:s}\naverageSmall={3:.3f}\naverageLarge={4:.3f}'.format(int(sx), int(sy), tooltipDate, self.average[0], self.average[1]))
+                # anchor des Tooltips anpassen, sodass Tooltip nicht aus dem Graph faellt
                 self.tooltip.setPos(pos)
                 self.tooltip.show()
                 return
 
         self.tooltip.hide()
+
+    def calculateAverage(self, points):
+        sumS = 0
+        sumL = 0
+        i = 0
+        #Null Elemente werden im Durchschnitt nicht mitberechnet
+        for p in points:
+            if (p[1] > 0) | (p[2] > 0):
+
+                sumS = sumS + p[1]
+                sumL = sumL + p[2]
+            elif len(points)> 1:
+                i = i+1
+
+        averageSmall = sumS / (len(points)-i)
+        averageLarge = sumL / (len(points)-i)
+        #print("averageSmall: ", averageSmall)
+        #print("averageLarge: ", averageLarge)
+
+        return (averageSmall, averageLarge)
+
 
     def onfilterWindow(self):
         """
@@ -108,7 +152,6 @@ class Plot:
         Cancel-Button schließt das Filter-Fenster
         """
 
-        print("Filter")
         self.widForm = QWidget()
         self.widForm.move(1110, 300)
         self.wid = widgetwin_ui.Ui_Form()
@@ -154,6 +197,7 @@ class Plot:
                     childNodeText = "0" + childNodeText
                 self.wid.labDay.setText(childNodeText)
 
+
     def onOkMonth(self):
         """
         Sucht die Messdaten welche im Filter 'Filter by Month/Day' ausgewählt wurden
@@ -171,7 +215,7 @@ class Plot:
             # Nur Januar funktioniert bisher zu Testzwecken
             elif strMonth == 'February':
                 print("February")
-                self.plot('daten-sehr-klein.dat')
+                self.filterMonth('2014-02' + '-' + self.wid.labDay.text())
             elif strMonth == 'March':
                 print("March")
                 self.filterMonth('2014-03' + '-' + self.wid.labDay.text())
@@ -205,23 +249,28 @@ class Plot:
 
 
     def filterMonth(self, timeInterval):
-        small = []
-        large = []
-        date = self.data['date']
-        dates = []
-        for s in date:
-            if timeInterval in s:
-                index = date.index(s)
-                dates.append(str(self.data[index][0]))
-                small.append(str(self.data[index][1]))
-                large.append(str(self.data[index][2]))
+        self.undo_data2 = self.undo_data1
+        self.undo_data1 = self.new_data
+        self.new_data = self.original_data
+        print(timeInterval)
+        index = 0
+        for s in  self.new_data:
+            decode_date = s[0].decode("utf-8")
 
-        if len(small) > 0:
-            self.plotFilterRange(small, large, dates)
+            if timeInterval not in decode_date:
+                self.new_data = np.delete( self.new_data, index)
+                index=index-1 #new_data wird kleiner, darum darf der Index nicht wachsen.
+            index = index+1
+        if(len(self.new_data) > 0):
+            print("len new_data: ",len(self.new_data))
+            self.data = self.new_data
+            if len(self.data)>0:
+                self.plotFilterRange(self.data['small'], self.data['large'], self.data['date'], autoDownsample=True)
         else:
             msgBox = QMessageBox()
             msgBox.setText("No data exists for the filter!")
             msgBox.exec_()
+
 
     def plot(self, filter):
         """
@@ -233,6 +282,31 @@ class Plot:
                                  names=["date", "small", "large"])
         self.plotFilterRange(new_data['small'], new_data['large'])
 
+    def onDelete(self):
+
+        if(len(self.selectedPoints)>0):
+            self.undo_data2 = self.undo_data1
+            self.undo_data1 = self.new_data #undo_data1 speichert die Datenmenge vor dem Bearbeiten
+            index = 0
+            for s in self.new_data:
+                for p in self.selectedPoints:
+                    if p[0] == s[0]:
+                        self.new_data = np.delete(self.new_data, index)
+                        index=index-1 #new_data wird kleiner, darum darf der Index nicht wachsen.
+                        del self.selectedPoints[self.selectedPoints.index(p)]
+                index = index+1
+            print("len delete: ",len(self.new_data))
+            self.data = self.new_data #somit kann weiterhin mit data['small'] und data['large'] gearbeitet werden.
+
+            self.plotFilterRange(self.data['small'], self.data['large'], self.data['date'], autoDownsample=True)
+
+    def undoFunction(self):
+
+        self.new_data = self.undo_data1
+        self.undo_data1 = self.undo_data2
+        self.data = self.new_data
+        self.plotFilterRange(self.data['small'], self.data['large'], self.data['date'], autoDownsample=True)
+
     def onCancel(self):
         """
         Jeder Cancel-Button blendet das Filter-Fenster aus
@@ -240,13 +314,16 @@ class Plot:
 
         self.widForm.close()
 
+
+
     def onQuit(self):
         """
         Quit-Button schließt die Anwendung
         """
 
-        self.widForm.close()
+
         sys.exit()
+
 
     def onOkFilterSlider(self):
         """
@@ -296,6 +373,8 @@ class Plot:
             print("Keine Daten: Plot2")
 
     def plotFilterRange(self, small, large, dates, **kwargs):
+
+        self.data_tree = scipy.spatial.cKDTree(np.vstack((small, large)).transpose())
         self.form = MainWindow()
         #self.form.move(300, 300)
         self.form.timeline.setScene(self.scene)
@@ -321,6 +400,9 @@ class Plot:
         self.scatterpoints.scene().sigMouseMoved.connect(self.onMove)
         self.form.btnFilter.clicked.connect(self.onfilterWindow)
         self.form.btnQuit.clicked.connect(self.onQuit)
+        self.form.btnDelete.clicked.connect(self.onDelete)
+        self.form.btnUndo.clicked.connect(self.undoFunction)
+        print("len Filter: ",len(self.new_data))
 
     def getDateFromDay(self, chooseDay):
         """
