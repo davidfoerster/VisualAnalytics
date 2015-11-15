@@ -15,7 +15,7 @@ def _main(*args):
     Weil die Ladedauer sehr hoch ist, wird erstmal nur der Datensatz mit allen Messdaten aus Januar verwendet. Beachtet dies bei den Filtern.
     """
 
-    data_path = args[0] if args else 'January.txt'
+    data_path = args[0] if args else 'data/January.txt'
     data = np.genfromtxt(data_path,
         dtype=[('date', '|S19'), ('small', 'i8'), ('large', 'i8')], delimiter=';',
         names=["date", "small", "large"])
@@ -33,7 +33,7 @@ def _main(*args):
 
 # TODO: was ist mit Schaltjahren?
 # Liste mit Tagen und dazu gehörenden Datum zB Tag 365 ist der 2014-12-31
-day = np.genfromtxt('DateInDays.txt', dtype=[('day', '|i8'), ('date', 'S10')], delimiter=',',
+day = np.genfromtxt('data/DateInDays.txt', dtype=[('day', '|i8'), ('date', 'S10')], delimiter=',',
                     names=["sliderDay", "sliderDate"])
 
 
@@ -299,7 +299,7 @@ class Plot:
 
     def plotFilterRange(self, small, large, **kwargs):
         self.form = MainWindow()
-        self.form.move(300, 300)
+        #self.form.move(300, 300)
         self.scatterpoints = pg.ScatterPlotItem(small, large, pen=None, symbol='o', **kwargs)
         self.form.graphicsView.addItem(self.scatterpoints)
         self.form.graphicsView.setLabel(axis='left', text='large')
