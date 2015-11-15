@@ -1,8 +1,9 @@
 from PyQt4.QtGui import *
-import widgetwin
+import widgetwin_ui
 import window_ui
 import pyqtgraph as pg
 import numpy as np
+import scipy.spatial
 import sys
 
 
@@ -14,7 +15,7 @@ def _main(*args):
     Weil die Ladedauer sehr hoch ist, wird erstmal nur der Datensatz mit allen Messdaten aus Januar verwendet. Beachtet dies bei den Filtern.
     """
 
-    data_path = args[0] if args else 'January.txt'
+    data_path = args[0] if args else 'data/January.txt'
     data = np.genfromtxt(data_path,
                          dtype=[('date', '|S19'), ('small', 'i8'), ('large', 'i8')], delimiter=';',
                          names=["date", "small", "large"])
@@ -32,7 +33,7 @@ def _main(*args):
 
 # TODO: was ist mit Schaltjahren?
 # Liste mit Tagen und dazu gehörenden Datum zB Tag 365 ist der 2014-12-31
-day = np.genfromtxt('DateInDays.txt', dtype=[('day', '|i8'), ('date', 'S10')], delimiter=',',
+day = np.genfromtxt('data/DateInDays.txt', dtype=[('day', '|i8'), ('date', 'S10')], delimiter=',',
                     names=["sliderDay", "sliderDate"])
 
 
@@ -51,6 +52,7 @@ class Plot:
 
     def __init__(self, data=None):
         self.data = data
+        self.data_tree = scipy.spatial.cKDTree(np.vstack((data['small'], data['large'])).transpose())
         self.form = None
         self.scatterpoints = None
         self.tooltip = None
@@ -60,16 +62,42 @@ class Plot:
         if data is not None:
             self.plotFilterRange(data['small'], data['large'], data['date'], autoDownsample=True)
 
-    def onMove(self, pos):
-        act_pos = self.scatterpoints.mapFromScene(pos)
-        pts = self.scatterpoints.pointsAt(act_pos)
-        if len(pts) != 0:
-            self.tooltip.setText('small=%d\nlarge=%d' % (pts[0].pos()[0], pts[0].pos()[1]))
-            # anchor des Tooltips anpassen, sodass Tooltip nicht aus dem Graph faellt
-            self.tooltip.setPos(pts[0].pos())
-            self.tooltip.show()
+    def onMove(self, scene_pos):
+        pos = self.scatterpoints.mapFromScene(scene_pos)
+
+        ss = self.scatterpoints.opts['size']
+        ssx = ssy = ss * 0.5
+        if self.scatterpoints.opts['pxMode']:
+            pv = self.scatterpoints.pixelVectors()
+            ssx *= pv[0].x()
+            ssy *= pv[1].y()
         else:
-            self.tooltip.hide()
+            pv = None
+
+        nearest_neighbor_idx = self.data_tree.query([[pos.x(), pos.y()]], distance_upper_bound=max(ssx, ssy))[1][0]
+
+        if 0 <= nearest_neighbor_idx < self.data.size:
+            s = self.scatterpoints.data[nearest_neighbor_idx]
+            sx = s['x']
+            sy = s['y']
+
+            ss2 = s['size']
+            if ss2 > 0 and ss2 != ss:
+                ss = ss2
+                assert ss <= self.scatterpoints.opts['size']
+                ssx = ssy = ss * 0.5
+                if pv is not None:
+                    ssx *= pv[0].x()
+                    ssy *= pv[1].y()
+
+            if abs(pos.x() - sx) <= ssx and abs(pos.y() - sy) <= ssy:
+                self.tooltip.setText('small=%d\nlarge=%d' % (sx, sy))
+                # anchor des Tooltips anpassen, sodass Tooltip nicht aus dem Graph fällt
+                self.tooltip.setPos(pos)
+                self.tooltip.show()
+                return
+
+        self.tooltip.hide()
 
     def onfilterWindow(self):
         """
@@ -83,7 +111,7 @@ class Plot:
         print("Filter")
         self.widForm = QWidget()
         self.widForm.move(1110, 300)
-        self.wid = widgetwin.Ui_Form()
+        self.wid = widgetwin_ui.Ui_Form()
         self.wid.setupUi(self.widForm)
 
         # Erzeuge Liste mit allen eingetragenen Monaten aus dem treeWidget
@@ -109,6 +137,7 @@ class Plot:
         self.wid.btnOk2.clicked.connect(self.onOkFilterSlider)
         self.wid.btnCancel2.clicked.connect(self.onCancel)
         self.wid.btnOk.clicked.connect(self.onOkMonth)
+
 
     def onItemClick(self, childs):
         getSelected = self.wid.treeWidget.selectedItems()
@@ -174,6 +203,7 @@ class Plot:
                 print("December")
                 self.filterMonth('2014-12')
 
+
     def filterMonth(self, timeInterval):
         small = []
         large = []
@@ -202,7 +232,6 @@ class Plot:
         new_data = np.genfromtxt(filter, dtype=[('date', '|S19'), ('small', 'i8'), ('large', 'i8')], delimiter=';',
                                  names=["date", "small", "large"])
         self.plotFilterRange(new_data['small'], new_data['large'])
-        self.scatterpoints = pg.ScatterPlotItem(new_data['small'], new_data['large'], pen=None, symbol='o')
 
     def onCancel(self):
         """
@@ -268,7 +297,7 @@ class Plot:
 
     def plotFilterRange(self, small, large, dates, **kwargs):
         self.form = MainWindow()
-        self.form.move(300, 300)
+        #self.form.move(300, 300)
         self.form.timeline.setScene(self.scene)
         self.form.timeline.setSceneRect(0, 0, 710, 10)
 
