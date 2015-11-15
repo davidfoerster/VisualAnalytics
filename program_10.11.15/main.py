@@ -3,6 +3,7 @@ import widgetwin
 import window_ui
 import pyqtgraph as pg
 import numpy as np
+import scipy.spatial
 import sys
 
 
@@ -52,6 +53,7 @@ class Plot:
 
     def __init__(self, data=None):
         self.data = data
+        self.data_tree = scipy.spatial.cKDTree(np.vstack((data['small'], data['large'])).transpose())
         self.form = None
         self.scatterpoints = None
         self.tooltip = None
@@ -60,16 +62,37 @@ class Plot:
             self.plotFilterRange(data['small'], data['large'], autoDownsample=True)
 
 
-    def onMove(self, pos):
-        act_pos = self.scatterpoints.mapFromScene(pos)
-        pts = self.scatterpoints.pointsAt(act_pos)
-        if len(pts) != 0:
-            self.tooltip.setText('small=%d\nlarge=%d' % (pts[0].pos()[0], pts[0].pos()[1]))
-            # anchor des Tooltips anpassen, sodass Tooltip nicht aus dem Graph faellt
-            self.tooltip.setPos(pts[0].pos())
-            self.tooltip.show()
-        else:
-            self.tooltip.hide()
+    def onMove(self, scene_pos):
+        pos = self.scatterpoints.mapFromScene(scene_pos)
+
+        ssx = ssy = self.scatterpoints.opts['size'] * 0.5
+        if self.scatterpoints.opts['pxMode']:
+            pv = self.scatterpoints.pixelVectors()
+            ssx *= pv[0].x()
+            ssy *= pv[1].y()
+
+        nearest_neighbor_idx = self.data_tree.query([[pos.x(), pos.y()]], distance_upper_bound=max(ssx, ssy))[1][0]
+
+        if 0 <= nearest_neighbor_idx < self.data.size:
+            s = self.scatterpoints.data[nearest_neighbor_idx]
+
+            ss = s['size']
+            if ss > 0:
+                assert ss <= self.scatterpoints.opts['size']
+                ssx = ssy = ss * 0.5
+                if self.scatterpoints.opts['pxMode']:
+                    pv = self.scatterpoints.pixelVectors()
+                    ssx *= pv[0].x()
+                    ssy *= pv[1].y()
+
+            if abs(pos.x() - s['x']) <= ssx and abs(pos.y() - s['y']) <= ssy:
+                self.tooltip.setText('small=%d\nlarge=%d' % (pos.x(), pos.y()))
+                # anchor des Tooltips anpassen, sodass Tooltip nicht aus dem Graph fällt
+                self.tooltip.setPos(pos)
+                self.tooltip.show()
+                return
+
+        self.tooltip.hide()
 
 
     def onfilterWindow(self):
@@ -110,6 +133,7 @@ class Plot:
         self.wid.btnOk2.clicked.connect(self.onOkFilterSlider)
         self.wid.btnCancel2.clicked.connect(self.onCancel)
         self.wid.btnOk.clicked.connect(self.onOkMonth)
+
 
     def onItemClick(self, childs):
         getSelected = self.wid.treeWidget.selectedItems()
@@ -176,6 +200,7 @@ class Plot:
                 print("December")
                 self.filterMonth('2014-12')
 
+
     def filterMonth(self, timeInterval):
         small = []
         large = []
@@ -203,7 +228,6 @@ class Plot:
         new_data = np.genfromtxt(filter, dtype=[('date', '|S19'), ('small', 'i8'), ('large', 'i8')], delimiter=';',
                                  names=["date", "small", "large"])
         self.plotFilterRange(new_data['small'], new_data['large'])
-        self.scatterpoints = pg.ScatterPlotItem(new_data['small'], new_data['large'], pen=None, symbol='o')
 
 
     def onCancel(self):
@@ -268,6 +292,7 @@ class Plot:
             self.plotFilterRange(small, large)
         else:
             print("Keine Daten: Plot2")
+
 
     def plotFilterRange(self, small, large, **kwargs):
         self.form = MainWindow()
