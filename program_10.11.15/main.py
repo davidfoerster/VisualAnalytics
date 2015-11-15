@@ -20,14 +20,6 @@ def _main(*args):
                          dtype=[('date', '|S19'), ('small', 'i8'), ('large', 'i8')], delimiter=';',
                          names=["date", "small", "large"])
 
-    # Wandelt die Byte Daten aus data['date'] in Strings um
-    #data['date'] = list(map(bytes.decode, data['date']))
-    #print(data['date'][0])
-
-
-    # x_var = data['small']
-    # y_var = data['large']
-
     app = QApplication(sys.argv)
     myplot = Plot(data)
     app.exec_()
@@ -55,7 +47,6 @@ class Plot:
 
     def __init__(self, data=None):
         self.data = data
-        #self.data_tree = scipy.spatial.cKDTree(np.vstack((data['small'], data['large'])).transpose())
         self.form = None
         self.scatterpoints = None
         self.tooltip = None
@@ -74,6 +65,7 @@ class Plot:
 
         if data is not None:
             self.plotFilterRange(data['small'], data['large'], data['date'], autoDownsample=True)
+
 
     def onMove(self, scene_pos):
         self.selectedPoint = ()
@@ -320,8 +312,6 @@ class Plot:
         """
         Quit-Button schließt die Anwendung
         """
-
-
         sys.exit()
 
 
@@ -345,8 +335,6 @@ class Plot:
         toDate = self.getDateFromDay(toValue)
         self.wid.labFrom.setText(fromDate)
         self.wid.labTo.setText(toDate)
-
-
 
         isDeletePoint = True #Alle Punkte die nicht im Filterzeitraum liegen, werden aus der Datenmenge gelöscht
         self.undo_data2 = self.undo_data1
@@ -407,10 +395,7 @@ class Plot:
         '''
 
 
-
-
     def plotFilterRange(self, small, large, dates, **kwargs):
-
         self.data_tree = scipy.spatial.cKDTree(np.vstack((small, large)).transpose())
         self.form = MainWindow()
         #self.form.move(300, 300)
@@ -451,6 +436,7 @@ class Plot:
         chooseDate = chooseDateByte.decode("utf-8")
         return chooseDate
 
+
     def setFrom(self):
         """
         Setzen des From-Sliders bei Änderung
@@ -459,6 +445,7 @@ class Plot:
         chooseDate = self.getDateFromDay(chooseDay)
         print(chooseDate)
         self.wid.labFrom.setText(chooseDate)
+
 
     def setTo(self):
         """
