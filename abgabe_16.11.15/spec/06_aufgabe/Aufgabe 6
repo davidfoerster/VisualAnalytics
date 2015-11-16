@@ -1,15 +1,14 @@
-
 onfilterWindow:     #Im Quellcode ab Zeile 96
     Filterfenster erzeugen
         TabWidget
-            Reiter "Filter by Month/Day" und "Filter by Range"
+            Reiter "Filter by Month/Day"
         TreeWidget
             Liste der Childitems erzeigen
             Elemente mit onItemClick(List: Childitems) verknüpfen
         Buttons
             Ersten OK-Button mit onOkMonth verknüpfen
             Cancel Buttons mit onCancel verknüpfen
-            Zweiten Ok-Button mit onOkFilterSlider verknüpfen
+
         Labels
             Month   #Zeigt den angedrückten Monat im TreeWidget an
             Day     #Zeigt den angedrückten Tag im TreeWidget an
