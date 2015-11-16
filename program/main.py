@@ -161,8 +161,6 @@ class Plot:
             if strMonth == 'January':
                 print("January")
                 self.filterMonth('2014-01' + '-' + self.wid.labDay.text())
-
-            # Nur Januar funktioniert bisher zu Testzwecken
             elif strMonth == 'February':
                 print("February")
                 self.filterMonth('2014-02' + '-' + self.wid.labDay.text())
@@ -171,40 +169,39 @@ class Plot:
                 self.filterMonth('2014-03' + '-' + self.wid.labDay.text())
             elif strMonth == 'April':
                 print("April")
-                self.filterMonth('2014-04')
+                self.filterMonth('2014-04' + '-' + self.wid.labDay.text())
             elif strMonth == 'May':
                 print("May")
-                self.filterMonth('2014-05')
+                self.filterMonth('2014-05'+ '-' + self.wid.labDay.text())
             elif strMonth == 'June':
                 print("June")
-                self.filterMonth('2014-06')
+                self.filterMonth('2014-06'+ '-' + self.wid.labDay.text())
             elif strMonth == 'July':
                 print("July")
-                self.filterMonth('2014-07')
+                self.filterMonth('2014-07'+ '-' + self.wid.labDay.text())
             elif strMonth == 'August':
                 print("August")
-                self.filterMonth('2014-08')
+                self.filterMonth('2014-08'+ '-' + self.wid.labDay.text())
             elif strMonth == 'September':
                 print("September")
-                self.filterMonth('2014-09')
+                self.filterMonth('2014-09'+ '-' + self.wid.labDay.text())
             elif strMonth == 'October':
                 print("October")
-                self.filterMonth('2014-10')
+                self.filterMonth('2014-10'+ '-' + self.wid.labDay.text())
             elif strMonth == 'November':
                 print("November")
-                self.filterMonth('2014-11')
+                self.filterMonth('2014-11'+ '-' + self.wid.labDay.text())
             elif strMonth == 'December':
                 print("December")
-                self.filterMonth('2014-12')
+                self.filterMonth('2014-12'+ '-' + self.wid.labDay.text())
 
 
     def filterMonth(self, timeInterval):
         self.undo_data2 = self.undo_data1
         self.undo_data1 = self.new_data
         self.new_data = self.original_data
-        print(timeInterval)
         index = 0
-        for s in  self.new_data:
+        for s in self.new_data:
             decode_date = s[0].decode("utf-8")
 
             if timeInterval not in decode_date:
@@ -212,7 +209,6 @@ class Plot:
                 index=index-1 #new_data wird kleiner, darum darf der Index nicht wachsen.
             index = index+1
         if(len(self.new_data) > 0):
-            print("len new_data: ",len(self.new_data))
             self.data = self.new_data
             if len(self.data)>0:
                 self.plotFilterRange(self.data['small'], self.data['large'], self.data['date'], autoDownsample=True)
@@ -244,7 +240,6 @@ class Plot:
                         index=index-1 #new_data wird kleiner, darum darf der Index nicht wachsen.
                         del self.selectedPoints[self.selectedPoints.index(p)]
                 index = index+1
-            print("len delete: ",len(self.new_data))
             self.data = self.new_data #somit kann weiterhin mit data['small'] und data['large'] gearbeitet werden.
 
             self.plotFilterRange(self.data['small'], self.data['large'], self.data['date'], autoDownsample=True)
@@ -314,7 +309,6 @@ class Plot:
                 index += 1
 
         if len(self.new_data) > 0:
-            print("len new_data: ",len(self.new_data))
             self.data = self.new_data
             if len(self.data)>0:
                 self.plotFilterRange(self.data['small'], self.data['large'], self.data['date'], autoDownsample=True)
@@ -322,36 +316,6 @@ class Plot:
             msgBox = QMessageBox()
             msgBox.setText("No data exists for the filter!")
             msgBox.exec_()
-
-        '''
-        plotDays = []
-        small = []
-        large = []
-        dates = []
-        print(fromDate)
-        print(toDate)
-        isStarted = False
-
-        for s in self.data['date']:
-            if toDate in s:
-                break
-            else:
-                if (fromDate in s) or isStarted:
-                    isStarted = True
-                    index = date.index(s)
-                    res = [self.data[index][0], str(self.data[index][1]), str(self.data[index][2])]
-                    dates.append(res[0])
-                    small.append(res[1])
-                    large.append(res[2])
-                    plotDays.append(res)
-
-        if (len(small) > 0):
-            self.plotFilterRange(small, large, dates)
-        else:
-            print("Keine Daten: Plot2")
-
-        '''
-
 
     def plotFilterRange(self, small, large, dates, **kwargs):
         self.form = MainWindow()
