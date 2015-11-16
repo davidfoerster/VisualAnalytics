@@ -1,18 +1,44 @@
-Entwicklungsarbeit & Bugs ['+' Erweiterungen/Verbeseerungen, '-' Bugs/Hindernisse]
+Entwicklungsarbeit & Bugs ['+' Erweiterungen/Verbesserungen, '-' Bugs/Hindernisse]
 
 - 04.11
-    + statischer Testplot des kompletten Datensatzes in einem Fenster
+    + Aufgabe 5 (automatisch durch PyQtGraph stufenloser Zoom bereit gestellt)
+    + statischer XY-Testplot des kompletten Datensatzes in einem Fenster
+    + beschriftete Achsen
     - Plot vergrößert sich nicht mit Fenster
     - mehrere Sekunden Berechnungsdauer um z.B. Fenster zu verschieben
 
 - 06.11
+    + Aufgabe 2
     + Hinzufügen eines Tooltips beim Hovern über einem Datenpunkt mit dem Mauszeiger
     - langsames Anzeigen und anschließendes Verstecken des Tooltips
 
 - 10.11
     + Testen des Programms mit verkleinertem Datensatz
-    + Aufgabe 6
+    + Aufgabe 6/8
     + Filter eines Monats bzw. Tages bzw. Zeitraum einstellbar über zwei Slider
     + einzelner Filterdialog
     - Fensterdialog schließt sich nicht mit Hauptfenster
 
+- 11.11
+    + Layout hinzugefügt, sodass Plot mit Fenster skaliert
+    + Refactoring
+
+- 13.11
+    + Beschleunigung der Erfassung des angewählten Datenpunktes per KDTree
+
+- 14.11
+    + Aufgabe 9
+    + Timeline mit Tooltips an den Ticks mit dem entsprechenden Tag
+    + Aufgabe 4
+    + Tooltip mit Average der kleinen und großen Partikel
+    + Aufgabe 3
+    + Auswahl der Datenpunkte per Hover über die entsprechenden Punkte
+    - ausgewählte Punkte werden noch nicht hervorgehoben
+
+- 15.11
+    + Aufgabe 1
+    + Gitterlinien eingefügt
+    + Aufgabe 11
+    + Undo/Delete der ausgewählten Punkte
+    + Refactoring
+    - Filterdialog hängt sich nach dem Drücken auf OK auf

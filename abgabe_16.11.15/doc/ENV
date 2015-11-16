@@ -1,4 +1,12 @@
-OS
-CPU
-Main Memory
-EntwicklungsGUI
+- OS
+    - Windows 7
+
+- CPU
+    - DuoCore 2 GHz
+
+- Main Memory
+    - 3 GB
+
+- EntwicklungsGUI
+    - PyCharm
+    - Anaconda 3.0 als Sammlung verwendeter Python-Bibliotheken
