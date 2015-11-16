@@ -1,5 +1,6 @@
 - OS
     - Windows 7
+    - Linux 3.19, Ubuntu 14.04.3
 
 - CPU
     - DuoCore 2 GHz
@@ -7,6 +8,6 @@
 - Main Memory
     - 3 GB
 
-- EntwicklungsGUI
+- Entwicklungsumgebung
     - PyCharm
     - Anaconda 3.0 als Sammlung verwendeter Python-Bibliotheken
