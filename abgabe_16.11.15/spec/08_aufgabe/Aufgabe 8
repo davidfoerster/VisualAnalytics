@@ -1,0 +1,27 @@
+onfilterWindow:     #Im Quellcode ab Zeile 96
+    Filterfenster erzeugen
+        TabWidget
+            "Filter by Range"
+        Sliders
+            fromSlider  #Startdatum
+            toSlider    #Enddatum
+        Buttons
+            Cancel Button mit onCancel verknüpfen
+            Ok-Button mit onOkFilterSlider verknüpfen
+        Labels
+            fromDate = Wert fromSlider
+            toDate = Wert toSlider
+
+
+onOkFilterSlider:   #Im Quellcode ab Zeile 267
+    fromDate und toDate Werte bestimmen
+    if toDate < fromDate                 #ist das Datum des fromSlider nach dem Datum des toSliders
+        tausche beide Werte
+        ändere Labels
+
+    undo_data1, undo_data2               #Speichern der Messdatenmenge vor dem Filtern für Undo-Funktion
+    if data not in range                 #Prüfe, auf welche Messdaten im Filterbereich liegen
+        delete data                      #Lösche alle anderen Dateneinträge
+    plotFilterRange(kleinePartikel, großePartikel, Datum/Uhrzeit) #Übergebe gefilterte Messdaten
+    if filterData = empty
+        show MessageBox                  #Sind keine Daten vorhanden, gibt Messagebox mit Hinweis aus
