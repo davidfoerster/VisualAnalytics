@@ -1,13 +1,15 @@
 - Compiler & Versionen
     - Python 3.4.3
-    - GNU Make 4.1
+    - GNU Make
 
 - externe Bibliotheken & Versionen
-    - Numpy 1.9.2
-    - Scipy 0.15.1
-    - PyQt 4
-    - PyQtGraph 0.9.10
+    - NumPy (>= 1.8.1) und SciPy (>= 0.14)
+      https://www.scipy.org/scipylib/download.html
+    - PyQt4 (>= 4.10)
+      https://www.riverbankcomputing.com/software/pyqt/download
+    - PyQtGraph (>= 0.9.10)
+      http://www.pyqtgraph.org/downloads/
 
 - eigene Leistung
-    - grafische Oberfl‰che gebaut
-    - Funktionalit‰t implementiert
+    - grafische Oberfl√§che gebaut
+    - Funktionalit√§t implementiert
