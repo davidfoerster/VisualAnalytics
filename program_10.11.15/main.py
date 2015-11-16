@@ -3,7 +3,8 @@ import widgetwin_ui
 import window_ui
 import pyqtgraph as pg
 import numpy as np
-import scipy.spatial
+from tree_scatter_plot import TreeScatterPlotItem
+from data_selection import DataSelection
 import sys
 
 
@@ -46,93 +47,45 @@ class Plot:
 
 
     def __init__(self, data=None):
-        self.data = data
         self.form = None
         self.scatterpoints = None
         self.tooltip = None
         self.scene = QGraphicsScene()
         self.pen = QPen(QColor(0, 0, 255))
 
-        self.original_data = self.data
-        self.new_data = self.data
+        self.original_data = data
+        self.new_data = data
         self.undo_data1 = self.new_data
         self.undo_data2 = self.undo_data1
-        #print("len: ",len(self.new_data))
-        self.selectedPoints = []
-
-        #Globale Variablen für Average
-        self.average = ()
+        self.selectedPoints = DataSelection(data, ('small', 'large'))
 
         if data is not None:
             self.plotFilterRange(data['small'], data['large'], data['date'], autoDownsample=True)
 
 
+    @property
+    def data(self):
+        return self.selectedPoints.dataset
+
+    @data.setter
+    def data(self, new_data):
+        self.selectedPoints.dataset = new_data
+
+
     def onMove(self, scene_pos):
-        self.selectedPoint = ()
-        tooltipDate = ''
         pos = self.scatterpoints.mapFromScene(scene_pos)
+        nearest_neighbor = self.scatterpoints.pointsAt(pos)
+        nearest_neighbor = next(iter(nearest_neighbor), None)
+        if nearest_neighbor is None:
+            self.tooltip.hide()
+            return
 
-        ss = self.scatterpoints.opts['size']
-        ssx = ssy = ss * 0.5
-        if self.scatterpoints.opts['pxMode']:
-            pv = self.scatterpoints.pixelVectors()
-            ssx *= pv[0].x()
-            ssy *= pv[1].y()
-        else:
-            pv = None
-
-        nearest_neighbor_idx = self.data_tree.query([[pos.x(), pos.y()]], distance_upper_bound=max(ssx, ssy))[1][0]
-
-        if 0 <= nearest_neighbor_idx < self.data.size:
-            s = self.scatterpoints.data[nearest_neighbor_idx]
-            sx = s['x']
-            sy = s['y']
-            date_of_point = self.data['date'][nearest_neighbor_idx]
-
-            ss2 = s['size']
-            if ss2 > 0 and ss2 != ss:
-                ss = ss2
-                assert ss <= self.scatterpoints.opts['size']
-                ssx = ssy = ss * 0.5
-                if pv is not None:
-                    ssx *= pv[0].x()
-                    ssy *= pv[1].y()
-
-            if abs(pos.x() - sx) <= ssx and abs(pos.y() - sy) <= ssy:
-                tooltipDate = date_of_point.decode("utf-8")
-                self.selectedPoint = (date_of_point, int(sx), int(sy))
-                #print(date_of_point,sx,sy)
-                if self.selectedPoint not in self.selectedPoints:
-                    self.selectedPoints.append(self.selectedPoint)
-                    self.average = self.calculateAverage(self.selectedPoints)
-
-                self.tooltip.setText('small={0:d}\nlarge={1:d}\ndate={2:s}\naverageSmall={3:.3f}\naverageLarge={4:.3f}'.format(int(sx), int(sy), tooltipDate, self.average[0], self.average[1]))
-                # anchor des Tooltips anpassen, sodass Tooltip nicht aus dem Graph faellt
-                self.tooltip.setPos(pos)
-                self.tooltip.show()
-                return
-
-        self.tooltip.hide()
-
-    def calculateAverage(self, points):
-        sumS = 0
-        sumL = 0
-        i = 0
-        #Null Elemente werden im Durchschnitt nicht mitberechnet
-        for p in points:
-            if (p[1] > 0) | (p[2] > 0):
-
-                sumS = sumS + p[1]
-                sumL = sumL + p[2]
-            elif len(points)> 1:
-                i = i+1
-
-        averageSmall = sumS / (len(points)-i)
-        averageLarge = sumL / (len(points)-i)
-        #print("averageSmall: ", averageSmall)
-        #print("averageLarge: ", averageLarge)
-
-        return (averageSmall, averageLarge)
+        s = self.data[nearest_neighbor]
+        self.tooltip.setText(
+            'small={2:d}\nlarge={3:d}\ndate={0}'.format(s[0].decode(), *s))
+        # anchor des Tooltips anpassen, sodass Tooltip nicht aus dem Graph fällt
+        self.tooltip.setPos(pos)
+        self.tooltip.show()
 
 
     def onfilterWindow(self):
@@ -396,7 +349,6 @@ class Plot:
 
 
     def plotFilterRange(self, small, large, dates, **kwargs):
-        self.data_tree = scipy.spatial.cKDTree(np.vstack((small, large)).transpose())
         self.form = MainWindow()
         #self.form.move(300, 300)
         self.form.timeline.setScene(self.scene)
@@ -411,7 +363,7 @@ class Plot:
                 rect = self.scene.addRect(2*dayIndex, 1, 1, 10, self.pen)
                 rect.setToolTip(bytes.decode(d))
 
-        self.scatterpoints = pg.ScatterPlotItem(small, large, pen=None, symbol='o', **kwargs)
+        self.scatterpoints = TreeScatterPlotItem(small, large, pen=None, symbol='o', **kwargs)
         self.form.graphicsView.addItem(self.scatterpoints)
         self.form.graphicsView.setLabel(axis='left', text='large')
         self.form.graphicsView.setLabel(axis='bottom', text='small')
