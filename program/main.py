@@ -80,11 +80,12 @@ class Plot:
     def onMove(self, scene_pos):
         pos = self.scatterpoints.mapFromScene(scene_pos)
         nearest_neighbor = self.scatterpoints.pointsAt(pos)
-        if not nearest_neighbor:
+        nearest_neighbor = next(iter(nearest_neighbor), None)
+        if nearest_neighbor is None:
             self.tooltip.hide()
             return
 
-        s = self.data[nearest_neighbor[0]]
+        s = self.data[nearest_neighbor]
         self.tooltip.setText(
             'small={2:d}\nlarge={3:d}\ndate={0}'.format(s[0].decode(), *s))
         # anchor des Tooltips anpassen, sodass Tooltip nicht aus dem Graph fällt
