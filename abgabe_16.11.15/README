@@ -17,7 +17,7 @@ Voraussetzungen
 Benutzung
 =========
 
-    ./run.sh [DATASET]
+    src/run.sh [DATASET]
 
 `run.sh` ruft `make all` auf und startet die Anwendung.
 
@@ -27,3 +27,6 @@ Eigene Leistung
 
     - grafische Oberfläche gebaut
     - Funktionalität implementiert
+    - k-D-Baum mit Streudiagramm synchronisieren
+    - Punktsuche auf k-D-Baum durchführen (Punktgrößen berücksichtigen)
+    - viel, viel "glue code"
