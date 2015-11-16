@@ -1,0 +1,7 @@
+onDelete:       #Im Quellcode ab Zeile 228
+    undo_data1                      #undo_data 1 - Daten vor der letzten Änderung
+    undo_data2                      #undo_data 2 - Daten vor den letzten beiden Änderungen
+    List selectedPoints             #Liste mit allen ausgewählten Punkten im Plot
+    if selectedPoints in dust-2014.dat
+        delete selectedPoints       #lösche alle ausgewählten Punkte aus der Datenmenge
+     plotFilterRange()              #plotte neue Datenmenge
