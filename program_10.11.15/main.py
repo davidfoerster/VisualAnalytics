@@ -275,8 +275,7 @@ class Plot:
         self.plotFilterRange(new_data['small'], new_data['large'])
 
     def onDelete(self):
-
-        if(len(self.selectedPoints)>0):
+        if len(self.selectedPoints) > 0:
             self.undo_data2 = self.undo_data1
             self.undo_data1 = self.new_data #undo_data1 speichert die Datenmenge vor dem Bearbeiten
             index = 0
@@ -292,12 +291,13 @@ class Plot:
 
             self.plotFilterRange(self.data['small'], self.data['large'], self.data['date'], autoDownsample=True)
 
-    def undoFunction(self):
 
+    def undoFunction(self):
         self.new_data = self.undo_data1
         self.undo_data1 = self.undo_data2
         self.data = self.new_data
         self.plotFilterRange(self.data['small'], self.data['large'], self.data['date'], autoDownsample=True)
+
 
     def onCancel(self):
         """
@@ -305,7 +305,6 @@ class Plot:
         """
 
         self.widForm.close()
-
 
 
     def onQuit(self):
@@ -336,7 +335,7 @@ class Plot:
         self.wid.labFrom.setText(fromDate)
         self.wid.labTo.setText(toDate)
 
-        isDeletePoint = True #Alle Punkte die nicht im Filterzeitraum liegen, werden aus der Datenmenge gelöscht
+        isDeletePoint = True  # Alle Punkte die nicht im Filterzeitraum liegen, werden aus der Datenmenge gelöscht
         self.undo_data2 = self.undo_data1
         self.undo_data1 = self.new_data
         self.new_data = self.original_data
@@ -344,18 +343,19 @@ class Plot:
         for s in self.new_data:
             decode_date = s[0].decode("utf-8")
 
-            if((fromDate in decode_date) & isDeletePoint):
+            if (fromDate in decode_date) and isDeletePoint:
                 isDeletePoint = False
 
-            if((toDate in decode_date) & (not isDeletePoint)):
+            if (toDate in decode_date) and not isDeletePoint:
                 isDeletePoint = True
 
-            if(isDeletePoint):
-                self.new_data = np.delete( self.new_data, index)
-                index=index-1 #new_data wird kleiner, darum darf der Index nicht wachsen.
+            if isDeletePoint:
+                self.new_data = np.delete(self.new_data, index)
+                # new_data wird kleiner, darum darf der Index nicht wachsen.
+            else:
+                index += 1
 
-            index = index+1
-        if(len(self.new_data) > 0):
+        if len(self.new_data) > 0:
             print("len new_data: ",len(self.new_data))
             self.data = self.new_data
             if len(self.data)>0:
