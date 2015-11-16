@@ -29,3 +29,6 @@ filterMonth(timeInterval):  #Im Quellcode ab Zeile 196
     plotFilterRange(kleinePartikel, großePartikel, Datum/Uhrzeit) #Übergebe gefilterte Messdaten
     if filterData = empty
         show MessageBox                  #Sind keine Daten vorhanden, gibt Messagebox mit Hinweis aus
+
+onCancel:
+    close Filter-Fenster
