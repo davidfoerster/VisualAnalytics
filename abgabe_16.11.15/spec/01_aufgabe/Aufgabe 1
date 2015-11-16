@@ -1,0 +1,5 @@
+plotFilterRange # ab Zeile 320
+    erstelle Fenster
+    erstelle Plot
+    plotte ausgewählte Punkte
+    füge Achsenbeschriftungen und Gitterlinien hinzu
