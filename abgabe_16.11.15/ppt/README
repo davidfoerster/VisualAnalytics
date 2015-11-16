@@ -1,0 +1,4 @@
+Kompilieren per build.sh
+    - LaTeX-Distribution muss auf dem Rechner vorhanden sein
+    - Pfade zu latexmk, pdflatex müssen verfügbar sein
+    - latexmkrc ist eine Konfigurationsdatei für latexmk

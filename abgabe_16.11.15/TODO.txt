@@ -4,11 +4,3 @@
 
 - ppt/
     - 2 Slides pro Aufgabe, die die Funktionalität anzeigen
-    - Leistungen der einzelnen Mitglieder
-
-- lib/
-    - Bilbiotheken einfügen, aber welche?
-
-- prototype/
-    - Makefile für src/ anpassen
-    - run-Skript einfügen
