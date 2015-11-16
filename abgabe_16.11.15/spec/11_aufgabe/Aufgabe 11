@@ -1,0 +1,5 @@
+undoFunction:       #Im Quellcode ab Zeile 245
+    undo_data1                      #undo_data 1 - Daten vor der letzten Änderung
+    undo_data2                      #undo_data 2 - Daten vor den letzten beiden Änderungen
+    current_data = undo_data1       #hole die Datenmenge vor der letzten Änderung
+    plotFilterRange(current_data)   #erstelle neuen Plot von den Daten vor der letzten Änderung
