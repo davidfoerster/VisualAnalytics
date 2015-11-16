@@ -1,0 +1,34 @@
+onfilterWindow:     #Im Quellcode ab Zeile 96
+    Filterfenster erzeugen
+        TabWidget
+            Reiter "Filter by Month/Day"
+        TreeWidget
+            Liste der Childitems erzeigen
+            Elemente mit onItemClick(List: Childitems) verknüpfen
+        Buttons
+            Ersten OK-Button mit onOkMonth verknüpfen
+            Cancel Buttons mit onCancel verknüpfen
+
+        Labels
+            Month   #Zeigt den angedrückten Monat im TreeWidget an
+            Day     #Zeigt den angedrückten Tag im TreeWidget an
+
+onItemClick:        #Im Quellcode ab Zeile 135
+    Label Month = clickedMonth  #Angedrückte Monat in Label Month eintragen
+    Label Day = clickedDay      #Angedrückte Tag in Label Day eintragen
+
+onOkMonth:          #Im Quellcode ab Zeile 148
+    if FilterMonat == 'Monat'                       # Prüfe welche Monat wurde zum Filtern ausgewählt
+        timeInterval = '2014-Monat-' + Label Day    #Lege timeInterval fest für die Datums-Darstellung in dust-2014.dat
+    filterMonth(timeInterval)                       #Rufe filterMonth Methode auf, Parameter: timeInterval
+
+filterMonth(timeInterval):  #Im Quellcode ab Zeile 196
+    undo_data1, undo_data2              #Speichern der Messdatenmenge vor dem Filtern für Undo-Funktion
+    if timeInterval not in dust-2014.dat #Prüfe, auf welche Messdaten das timeInterval passt
+        delete data                      #Lösche alle anderen Dateneinträge
+    plotFilterRange(kleinePartikel, großePartikel, Datum/Uhrzeit) #Übergebe gefilterte Messdaten
+    if filterData = empty
+        show MessageBox                  #Sind keine Daten vorhanden, gibt Messagebox mit Hinweis aus
+
+onCancel:
+    close Filter-Fenster
