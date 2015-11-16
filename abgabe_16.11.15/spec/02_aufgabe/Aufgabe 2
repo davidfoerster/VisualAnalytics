@@ -1,0 +1,9 @@
+def onMove # ab Zeile 80
+    mappe Mauskoordinaten auf Graph
+    bestimme nächsten Datenpunkt per kD-Baum
+    
+    wenn (kein Datenpunkt gefunden)
+        verstecke Tooltip
+
+    erstelle Tooltip mit Partikelanzahl
+    zeige Tooltip
