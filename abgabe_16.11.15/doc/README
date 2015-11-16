@@ -1,3 +1,6 @@
+Voraussetzungen
+===============
+
 - Compiler & Versionen
     - Python 3.4.3
     - GNU Make
@@ -10,6 +13,17 @@
     - PyQtGraph (>= 0.9.10)
       http://www.pyqtgraph.org/downloads/
 
-- eigene Leistung
+
+Benutzung
+=========
+
+    ./run.sh [DATASET]
+
+`run.sh` ruft `make all` auf und startet die Anwendung.
+
+
+Eigene Leistung
+===============
+
     - grafische Oberfläche gebaut
     - Funktionalität implementiert

@@ -7,7 +7,7 @@ import pyqtgraph as pg
 import numpy as np
 from tree_scatter_plot import TreeScatterPlotItem
 from data_selection import DataSelection
-import sys
+import sys, os.path
 
 
 def _main(*args):
@@ -18,7 +18,7 @@ def _main(*args):
     Weil die Ladedauer sehr hoch ist, wird erstmal nur der Datensatz mit allen Messdaten aus Januar verwendet. Beachtet dies bei den Filtern.
     """
 
-    data_path = args[0] if args else 'data/January.txt'
+    data_path = args[0] if args else (_bindir + '/data/January.txt')
     data = np.genfromtxt(data_path,
                          dtype=[('date', '|S19'), ('small', 'i8'), ('large', 'i8')], delimiter=';',
                          names=["date", "small", "large"])
@@ -28,10 +28,13 @@ def _main(*args):
     app.exec_()
 
 
+_bindir = os.path.dirname(os.path.realpath(__file__))
+
 # TODO: was ist mit Schaltjahren?
 # Liste mit Tagen und dazu gehörenden Datum zB Tag 365 ist der 2014-12-31
-day = np.genfromtxt('data/DateInDays.txt', dtype=[('day', '|i8'), ('date', 'S10')], delimiter=',',
-                    names=["sliderDay", "sliderDate"])
+day = np.genfromtxt(_bindir + '/data/DateInDays.txt',
+    dtype=[('day', '|i8'), ('date', 'S10')], delimiter=',',
+    names=["sliderDay", "sliderDate"])
 
 
 class MainWindow(QMainWindow, window_ui.Ui_MainWindow):
