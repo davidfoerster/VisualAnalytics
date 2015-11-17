@@ -1,8 +1,9 @@
 #!/bin/sh
 set -eu
 RUNSCRIPT="`readlink -e -- "$0"`"
-BINDIR="${RUNSCRIPT%/*}"
-[ $# -gt 0 ] || set -- "$BINDIR/data/data-j-m"
+SCRIPTDIR="${RUNSCRIPT%/*}"
+SRCDIR="$SCRIPTDIR/src"
+[ $# -gt 0 ] || set -- "SCRIPTDIR/data/data-j-m"
 
-make -C "$BINDIR" all
-exec python3.4 -O "$BINDIR/main.py" "$@"
+make -C "$SRCDIR" all
+exec python3.4 -O "$SRCDIR/main.py" "$@"

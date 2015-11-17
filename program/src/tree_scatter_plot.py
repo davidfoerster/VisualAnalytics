@@ -1,7 +1,6 @@
 import numpy as np
 import pyqtgraph as pg
 import scipy.spatial
-from debug_iterator import *
 
 
 class TreeScatterPlotItem(pg.ScatterPlotItem):

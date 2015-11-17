@@ -1,13 +1,15 @@
 #!/usr/bin/env python3.4
 
-from PyQt4.QtGui import *
-import widgetwin_ui
-import window_ui
-import pyqtgraph as pg
+import os.path
+import sys
+
 import numpy as np
-from tree_scatter_plot import TreeScatterPlotItem
+import pyqtgraph as pg
+from PyQt4.QtGui import *
+import window_ui
+import widgetwin_ui
 from data_selection import DataSelection
-import sys, os.path
+from tree_scatter_plot import TreeScatterPlotItem
 
 
 def _main(*args):
@@ -28,7 +30,7 @@ def _main(*args):
 	app.exec_()
 
 
-_bindir = os.path.dirname(os.path.realpath(__file__))
+_bindir = os.path.dirname(os.path.dirname(os.path.realpath(__file__)))
 
 # TODO: was ist mit Schaltjahren?
 # Liste mit Tagen und dazu gehörenden Datum zB Tag 365 ist der 2014-12-31
