@@ -40,7 +40,11 @@ class TreeScatterPlotItem(pg.ScatterPlotItem):
 			assert ss <= self.opts['size']
 			ss = self._getPointSize(point)
 
-		return abs(pos.x() - point['x']) <= ss.x() and abs(pos.y() - point['y']) <= ss.y()
+		# Correct point distance by (per-dimension) scaling factor
+		dx = (pos.x() - point['x']) / ss.x()
+		dy = (pos.y() - point['y']) / ss.y()
+
+		return (dx * dx + dy * dy) <= 1
 
 
 	def _getPointSize(self, point=None):
