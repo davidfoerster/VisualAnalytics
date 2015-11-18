@@ -8,8 +8,7 @@ import pyqtgraph as pg
 from PyQt4.QtGui import *
 import window_ui
 import widgetwin_ui
-from data_selection import DataSelection
-from tree_scatter_plot import TreeScatterPlotItem
+from tree_scatter_plot import SelectableScatterPlotItem
 
 
 def _main(*args):
@@ -54,6 +53,7 @@ class Plot:
 
 
 	def __init__(self, data = None):
+		self.data = data
 		self.form = None
 		self.scatterpoints = None
 		self.tooltip = None
@@ -64,20 +64,9 @@ class Plot:
 		self.new_data = data
 		self.undo_data1 = self.new_data
 		self.undo_data2 = self.undo_data1
-		self.selectedPoints = DataSelection(data, ('small', 'large'))
 
 		if data is not None:
 			self.plotFilterRange(data['small'], data['large'], data['date'], autoDownsample = True)
-
-
-	@property
-	def data(self):
-		return self.selectedPoints.dataset
-
-
-	@data.setter
-	def data(self, new_data):
-		self.selectedPoints.dataset = new_data
 
 
 	def onMove(self, scene_pos):
@@ -337,7 +326,7 @@ class Plot:
 				rect = self.scene.addRect(2 * dayIndex, 1, 1, 10, self.pen)
 				rect.setToolTip(bytes.decode(d))
 
-		self.scatterpoints = TreeScatterPlotItem(small, large, pen = None, symbol = 'o', **kwargs)
+		self.scatterpoints = SelectableScatterPlotItem(small, large, pen=None, symbol='o', statKeys=('small', 'large'), **kwargs)
 		self.form.graphicsView.addItem(self.scatterpoints)
 		self.form.graphicsView.setLabel(axis = 'left', text = 'large')
 		self.form.graphicsView.setLabel(axis = 'bottom', text = 'small')

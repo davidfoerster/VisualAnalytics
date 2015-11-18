@@ -26,6 +26,16 @@ class DataSelection(set):
 		return map(self._dataset.__getitem__, self)
 
 
+	def flip(self, item):
+		self.invalidate()
+		if item in self:
+			super().remove(item)
+			return False
+		else:
+			super().add(item)
+			return True
+
+
 	def get_stat(self, func, name=None):
 		if isinstance(func, str):
 			name = func
