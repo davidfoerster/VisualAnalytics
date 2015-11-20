@@ -6,17 +6,11 @@ import pyqtgraph as pg
 import scipy.spatial
 
 
-class TreeScatterPlotItem(pg.ScatterPlotItem):
+class TreeScatterPlotItem(pg.PlotDataItem):
 
 	def __init__(self, *args, **kargs):
-		self.data_tree = None
 		super().__init__(*args, **kargs)
-
-
-	def addPoints(self, *args, **kargs):
-		super().addPoints(*args, **kargs)
-		data = self.data
-		self.data_tree = scipy.spatial.cKDTree(np.vstack((data['x'], data['y'])).transpose())
+		self.data_tree = scipy.spatial.cKDTree(np.vstack((self.xData, self.yData)).transpose(), leafsize=1)
 
 
 	def clear(self):
@@ -40,31 +34,32 @@ class TreeScatterPlotItem(pg.ScatterPlotItem):
 
 
 	def _isPointAt(self, p_idx, pos, defaultSize=None):
-		if not (0 <= p_idx < self.data.size):
+		if not (0 <= p_idx < self.xData.size):
 			return False
 
-		point = self.data[p_idx]
-		ss = point['size']
-		if ss < 0 or ss == self.opts['size']:
+		# point = self.data[p_idx]
+		ss = defaultSize
+		'''ss = point['symbolSize']
+		if ss < 0 or ss == self.opts['symbolSize']:
 			ss = defaultSize
 		else:
-			assert ss <= self.opts['size']
-			ss = self._getPointSize(point)
+			assert ss <= self.opts['symbolSize']
+			ss = self._getPointSize(point)'''
 
 		# Correct point distance by (per-dimension) scaling factor
-		dx = (pos.x() - point['x']) / ss.x()
-		dy = (pos.y() - point['y']) / ss.y()
+		dx = (pos.x() - self.xData[p_idx]) / ss.x()
+		dy = (pos.y() - self.yData[p_idx]) / ss.y()
 
 		return (dx * dx + dy * dy) <= 1
 
 
 	def _getPointSize(self, point=None):
 		if point is not None:
-			ss = point['size']
+			ss = point['symbolSize']
 		else:
 			ss = -1
 		if ss < 0:
-			ss = self.opts['size']
+			ss = self.opts['symbolSize']
 
 		ssx = ssy = ss * 0.5
 		if self.opts['pxMode']:

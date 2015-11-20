@@ -8,7 +8,7 @@ import pyqtgraph as pg
 from PyQt4.QtGui import *
 import window_ui
 import widgetwin_ui
-from tree_scatter_plot import SelectableScatterPlotItem
+from tree_scatter_plot import *
 
 
 def _main(*args):
@@ -19,7 +19,7 @@ def _main(*args):
 	Weil die Ladedauer sehr hoch ist, wird erstmal nur der Datensatz mit allen Messdaten aus Januar verwendet. Beachtet dies bei den Filtern.
 	"""
 
-	data_path = args[0] if args else (_bindir + '/data/January.txt')
+	data_path = args[0] if args else (_bindir + '/data/daten-klein.dat')
 	data = np.genfromtxt(data_path,
 		dtype = [('date', '|S19'), ('small', 'i8'), ('large', 'i8')], delimiter = ';',
 		names = ["date", "small", "large"])
@@ -326,7 +326,7 @@ class Plot:
 				rect = self.scene.addRect(2 * dayIndex, 1, 1, 10, self.pen)
 				rect.setToolTip(bytes.decode(d))
 
-		self.scatterpoints = SelectableScatterPlotItem(small, large, pen=None, symbol='o', statKeys=('small', 'large'), **kwargs)
+		self.scatterpoints = TreeScatterPlotItem(small, large, pen=None, symbol='o', statKeys=('small', 'large'), **kwargs)
 		self.form.graphicsView.addItem(self.scatterpoints)
 		self.form.graphicsView.setLabel(axis = 'left', text = 'large')
 		self.form.graphicsView.setLabel(axis = 'bottom', text = 'small')
