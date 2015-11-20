@@ -9,5 +9,6 @@
 *.pdf
 __pycache__/
 *_ui.py
+*.dat
 .idea/workspace.xml
 .idea/tasks.xml
