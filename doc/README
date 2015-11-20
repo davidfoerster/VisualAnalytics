@@ -32,6 +32,9 @@ Benutzung
 
 `run.sh` ruft `make all` auf und startet die Anwendung.
 
+DATASET - optionale Angabe einer Datei mit einem Datensatz; standardmäßig
+          wird ein Datensatz mit reduzierter Größe (ca. 80k Tupel) verwendet.
+
 
 Eigene Leistung
 ===============
