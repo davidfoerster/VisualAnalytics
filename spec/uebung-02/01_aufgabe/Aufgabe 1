@@ -1,4 +1,4 @@
-plotFilterRange # ab Zeile 320
+Funktion "Plot.plotFilterRange"
     erstelle Fenster
     erstelle Plot
     plotte ausgewählte Punkte

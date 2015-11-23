@@ -1,6 +1,6 @@
-def onMove # ab Zeile 80
+Funktion "Plot.onMove":
     mappe Mauskoordinaten auf Graph
-    bestimme nächsten Datenpunkt per kD-Baum
+    bestimme nächsten Datenpunkt per k-dimensionalem-Baum
     
     wenn (kein Datenpunkt gefunden)
         verstecke Tooltip

@@ -1,0 +1,15 @@
+SelectableScatterPlotItem.mouseClickEvent:
+	- Bestimme alle k=1 benachbarten Punkte im Punktradius (self.pointsAt()) im k-D-Baum
+	- Füge Punkt der Auswahl hinzu oder entferne ihn (je nach vorherigem Zustand)
+	- Färbe Punkt entsprechend der Vorhebung ein
+
+
+analog dazu
+SelectableScatterPlotItem.mouseDragEvent:
+ - falls nicht losgelassen, zeichne rechteckigen Auswahlbereich
+ - sonst: bestimme alle benachbarten Punkte innerhalb des Außenkreises des markierten Bereichs (self.pointsIn())
+ - falls Shift gedrückt entferne markierte Punkte aus Auswahl, sonst füge sie ihr hinzu
+ - färbe markierte Punkte entsprechend ein
+
+
+Die derzeitig markierten Punkte werden anhand ihrer Indizes in einer Hash-Menge gespeichert (Python's "set"), die statistische Daten zwischenspeichert ("DataSelection", eigene Erweiterung von "set").

@@ -43,4 +43,7 @@ Eigene Leistung
     - Funktionalität implementiert
     - k-D-Baum mit Streudiagramm synchronisieren
     - Punktsuche auf k-D-Baum durchführen (Punktgrößen berücksichtigen)
+    - Rechtecksuche auf k-D-Baum effizient mittels Umfangskreisen
+    - Datenstruktur für ausgewählte Punkte
+    - Punkt- und Bereichsauswahl
     - viel, viel "glue code"

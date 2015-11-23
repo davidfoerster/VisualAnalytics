@@ -1,3 +1,9 @@
+Statistik der ausgewählten Punkte:
+Plot.display_selection_info:
+ - "change listener" von DataSelection
+ - Ermittle Statistiken mittels DataSelection.get_stat(), das auf "sum", "mean", "median", "var" des Moduls "numpy" zurückgreift
+ - Rudimentäre Ausgabe auf dem Standardausgabegerät ("print()") bei jeder Änderung der Auswahl
+
 onDelete:       #Im Quellcode ab Zeile 228
     undo_data1                      #undo_data 1 - Daten vor der letzten Änderung
     undo_data2                      #undo_data 2 - Daten vor den letzten beiden Änderungen
