@@ -81,7 +81,7 @@ class Plot:
 		self.tooltip.setText(
 			'small={2:d}\nlarge={3:d}\ndate={0}'.format(s[0].decode(), *s))
 		# anchor des Tooltips anpassen, sodass Tooltip nicht aus dem Graph fällt
-		self.tooltip.setPos(pos)
+		self.tooltip.setPos(s[1], s[2])
 		self.tooltip.show()
 
 
