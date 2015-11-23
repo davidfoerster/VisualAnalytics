@@ -89,6 +89,22 @@ class SelectableScatterPlotItem(TreeScatterPlotItem):
 			selected_pen.setColor(QtGui.QColor(0xffffff))
 			self.opts['selectedPen'] = selected_pen
 
+		self.drag_rectangle = QtGui.QGraphicsRectItem()
+		self.drag_rectangle.setPen(selected_pen)
+
+
+	def itemChange(self, change, value):
+		value = super().itemChange(change, value)
+
+		if change == self.ItemSceneChange:
+			if value is not self.scene():
+				if value is not None:
+					value.addItem(self.drag_rectangle)
+				else:
+					self.scene().removeItem(self.drag_rectangle)
+
+		return value
+
 
 	def clear(self):
 		super().clear()
@@ -125,3 +141,15 @@ class SelectableScatterPlotItem(TreeScatterPlotItem):
 				return
 
 		ev.ignore()
+
+
+	def mouseDragEvent(self, ev):
+		rect_item = self.drag_rectangle
+
+		if not ev.isFinish():
+			rect_item.setRect(QtCore.QRectF(ev.buttonDownScenePos(), ev.scenePos()).normalized())
+			rect_item.show()
+		else:
+			rect_item.hide()
+
+		ev.accept()
