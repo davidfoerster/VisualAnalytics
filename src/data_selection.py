@@ -74,7 +74,7 @@ class DataSelection(set):
 
 	def __iand__(self, other):
 		if not self.issubset(other):
-			super().__iand__(other)
+			super().intersection_update(other)
 			self.invalidate()
 		return self
 
@@ -104,7 +104,7 @@ class DataSelection(set):
 
 	def __isub__(self, other):
 		if not self.isdisjoint(other):
-			super().__isub__(other)
+			super().difference_update(other)
 			self.invalidate()
 		return self
 
@@ -116,7 +116,7 @@ class DataSelection(set):
 
 	def __ixor__(self, other):
 		if len(other):
-			super().__ixor__(other)
+			super().symmetric_difference_update(other)
 			self.invalidate()
 		return self
 
@@ -128,7 +128,7 @@ class DataSelection(set):
 
 	def __ior__(self, other):
 		if not self.issuperset(other):
-			super().__ior__(other)
+			super().update(other)
 			self.invalidate()
 		return self
 
