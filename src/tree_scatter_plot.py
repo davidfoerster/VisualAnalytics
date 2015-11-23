@@ -1,4 +1,5 @@
-from PyQt4 import QtCore, QtGui
+from PyQt4.QtCore import Qt, QRectF
+from PyQt4 import QtGui
 from data_selection import DataSelection
 
 import numpy as np
@@ -34,7 +35,7 @@ class TreeScatterPlotItem(pg.ScatterPlotItem):
 
 	def pointsAt(self, pos, k=1):
 		ss = self._getPointSize(None)
-		nearest_neighbors = self.data_tree.query([[pos.x(), pos.y()]], k, 0, 2, max(ss.x(), ss.y()))[1]
+		nearest_neighbors = self.data_tree.query(((pos.x(), pos.y()),), k, 0, 2, max(ss.x(), ss.y()))[1]
 		nearest_neighbors = filter(lambda p: self._isPointAt(p, pos, ss), nearest_neighbors)
 		return nearest_neighbors
 
@@ -81,7 +82,12 @@ class SelectableScatterPlotItem(TreeScatterPlotItem):
 		self.selection = None
 		super().__init__(*args, **kargs)
 		self.selection = DataSelection(self.data_tree.data, kargs.get('statKeys'))
-		self.opts['selectedBrush'] = QtGui.QBrush(QtGui.QColor(0xffffff))
+
+		selected_pen = self.opts.get('selectedPen')
+		if selected_pen is None:
+			selected_pen = QtGui.QPen(Qt.DashLine)
+			selected_pen.setColor(QtGui.QColor(0xffffff))
+			self.opts['selectedPen'] = selected_pen
 
 
 	def clear(self):
@@ -97,14 +103,22 @@ class SelectableScatterPlotItem(TreeScatterPlotItem):
 			self.selection.dataset = self.data_tree.data
 
 
+	def _setSelectionBrush(self, selected, *p_idxs):
+		if selected:
+			brush = self.opts['selectedPen'].brush()
+		else:
+			brush = self.opts['brush']
+		for i in p_idxs:
+			self.point(i).setBrush(brush)
+
+
 	def mouseClickEvent(self, ev):
-		if ev.button() == QtCore.Qt.LeftButton:
+		if ev.button() == Qt.LeftButton:
 			pt_idx = next(iter(self.pointsAt(ev.pos())), None)
 			if pt_idx is not None:
 				pt = self.point(pt_idx)
 				selected = self.selection.flip(pt_idx)
-				selected = 'selectedBrush' if selected else 'brush'
-				pt.setBrush(self.opts[selected])
+				self._setSelectionBrush(selected, pt_idx)
 
 				self.sigClicked.emit(self, (pt,))
 				ev.accept()
