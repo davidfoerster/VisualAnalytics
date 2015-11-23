@@ -1,3 +1,4 @@
+# LaTeX output
 *.aux
 *.fdb_latexmk
 *.fls
@@ -7,8 +8,16 @@
 *.snm
 *.toc
 *.pdf
+*.ps
+*.dvi
+
+# Generated source and binary code
 __pycache__/
 *_ui.py
-*.dat
+
+# Personal IDE project files
 .idea/workspace.xml
 .idea/tasks.xml
+
+# Generic data
+*.dat
