@@ -5,6 +5,7 @@ class DataSelection(set):
 		self._dataset = dataset
 		self._stats = dict()
 		self.stat_keys = stat_keys
+		self.change_listeners = []
 
 
 	@property
@@ -14,12 +15,14 @@ class DataSelection(set):
 	@dataset.setter
 	def dataset(self, new_dataset):
 		if new_dataset is not self._dataset:
-			self.invalidate()
 			self._dataset = new_dataset
+			self.invalidate()
 
 
 	def invalidate(self):
 		self._stats.clear()
+		for cl in self.change_listeners:
+			cl(self)
 
 
 	def values(self):
@@ -27,13 +30,13 @@ class DataSelection(set):
 
 
 	def flip(self, item):
-		self.invalidate()
-		if item in self:
+		has_item = item in self
+		if has_item:
 			super().remove(item)
-			return False
 		else:
 			super().add(item)
-			return True
+		self.invalidate()
+		return not has_item
 
 
 	def get_stat(self, func, name=None):
@@ -60,79 +63,20 @@ class DataSelection(set):
 		return self.get_stat(mean)
 
 
-	def discard(self, elem):
-		if elem in self:
-			super().discard(elem)
+def _invalide_on_change(method):
+	def change_wrapper(self, *args):
+		prev_size = len(self)
+		rv = method(self, *args)
+		if prev_size != len(self):
 			self.invalidate()
+		return rv
+
+	return change_wrapper
 
 
-	def intersection_update(self, *others):
-		for o in others:
-			self.__iand__(o)
-		return self
-
-
-	def __iand__(self, other):
-		if not self.issubset(other):
-			super().intersection_update(other)
-			self.invalidate()
-		return self
-
-
-	def pop(self):
-		r = super().pop()
-		self.invalidate()
-		return r
-
-
-	def add(self, elem):
-		if elem not in self:
-			super().add(elem)
-			self.invalidate()
-
-
-	def remove(self, elem):
-		if elem in self:
-			self.invalidate()
-		super().remove(elem)
-
-
-	def difference_update(self, *others):
-		for o in others:
-			self.__isub__(o)
-		return self
-
-	def __isub__(self, other):
-		if not self.isdisjoint(other):
-			super().difference_update(other)
-			self.invalidate()
-		return self
-
-
-	def symmetric_difference_update(self, *others):
-		for o in others:
-			self.__ixor__(o)
-		return self
-
-	def __ixor__(self, other):
-		if len(other):
-			super().symmetric_difference_update(other)
-			self.invalidate()
-		return self
-
-
-	def update(self, *others):
-		for o in others:
-			self.__ior__(o)
-		return self
-
-	def __ior__(self, other):
-		if not self.issuperset(other):
-			super().update(other)
-			self.invalidate()
-		return self
-
-
-	def clear(self):
-		super().clear()
-		self.invalidate()
+for m in (
+	'add', 'remove', 'discard', 'pop', 'clear',
+	'update', 'intersection_update', 'difference_update', 'symmetric_difference_update',
+	'__iand__', '__ior__', '__ixor__', '__isub__',
+):
+	setattr(DataSelection, m, _invalide_on_change(getattr(set, m)))
