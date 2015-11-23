@@ -344,6 +344,20 @@ class Plot:
 		print("len Filter: ", len(self.new_data))
 
 
+	def display_selection_info(self, selection):
+		print(
+			'selected={} [small={}, large={}]'.format(
+				len(selection), *selection.get_stat('sum').astype(np.int64)),
+			end='')
+
+		if selection:
+			print(', median={}'.format(selection.get_stat('median').astype(np.int64)), end='')
+			for stat in ('mean', 'var'):
+				print(', {}={}'.format(stat, selection.get_stat(stat)), end='')
+
+		print()
+
+
 	def getDateFromDay(self, chooseDay):
 		"""
 		Wandelt die Byte-Daten in Strings um
