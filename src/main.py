@@ -78,8 +78,15 @@ class Plot:
 			return
 
 		s = self.data[nearest_neighbor]
-		self.tooltip.setText(
-			'small={2:d}\nlarge={3:d}\ndate={0}'.format(s[0].decode(), *s))
+		selection = self.scatterpoints.selection
+		if nearest_neighbor in selection:
+			tt = '{} selected items'.format(len(selection))
+			for m in ('sum', 'median', 'mean', 'var'):
+				tt += '\n{}s=[{:.3}, {:.3}]'.format(m.upper(), *selection.get_stat(m))
+		else:
+			tt = 'small={2:d}\nlarge={3:d}\ndate={0}'.format(s[0].decode(), *s)
+
+		self.tooltip.setText(tt)
 		# anchor des Tooltips anpassen, sodass Tooltip nicht aus dem Graph fällt
 		self.tooltip.setPos(s[1], s[2])
 		self.tooltip.show()
@@ -327,7 +334,6 @@ class Plot:
 				rect.setToolTip(bytes.decode(d))
 
 		self.scatterpoints = SelectableScatterPlotItem(small, large, pen=None, symbol='o', **kwargs)
-		self.scatterpoints.selection.change_listeners.append(self.display_selection_info)
 		self.form.graphicsView.addItem(self.scatterpoints)
 		self.form.graphicsView.setLabel(axis = 'left', text = 'large')
 		self.form.graphicsView.setLabel(axis = 'bottom', text = 'small')
@@ -342,20 +348,6 @@ class Plot:
 		self.form.btnDelete.clicked.connect(self.onDelete)
 		self.form.btnUndo.clicked.connect(self.undoFunction)
 		print("len Filter: ", len(self.new_data))
-
-
-	def display_selection_info(self, selection):
-		print(
-			'selected={} [small={}, large={}]'.format(
-				len(selection), *selection.get_stat('sum').astype(np.int64)),
-			end='')
-
-		if selection:
-			print(', median={}'.format(selection.get_stat('median').astype(np.int64)), end='')
-			for stat in ('mean', 'var'):
-				print(', {}={}'.format(stat, selection.get_stat(stat)), end='')
-
-		print()
 
 
 	def getDateFromDay(self, chooseDay):
