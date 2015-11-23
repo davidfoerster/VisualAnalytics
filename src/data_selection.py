@@ -1,4 +1,5 @@
 import numpy
+import collections
 
 
 class DataSelection(set):
@@ -69,6 +70,27 @@ class DataSelection(set):
 		return stat
 
 
+	def symmetric_difference_update(self, *others):
+		must_invalidate = False
+		for o in others:
+			if not isinstance(o, collections.Container):
+				o = tuple(o)
+			if o:
+				must_invalidate = True
+				super().symmetric_difference_update(o)
+		if must_invalidate:
+			self.invalidate()
+		return self
+
+
+	def __ixor__(self, other):
+		if not isinstance(other, collections.Set):
+			raise TypeError('\'{}\' object is not a set'.format(type(other).__name__))
+		if other:
+			super().__ixor__(other)
+			self.invalidate()
+
+
 def _invalide_on_change(method):
 	def change_wrapper(self, *args):
 		prev_size = len(self)
@@ -81,7 +103,7 @@ def _invalide_on_change(method):
 
 for m in (
 	'add', 'remove', 'discard', 'pop', 'clear',
-	'update', 'intersection_update', 'difference_update', 'symmetric_difference_update',
-	'__iand__', '__ior__', '__ixor__', '__isub__',
+	'update', 'intersection_update', 'difference_update',
+	'__ior__', '__iand__', '__isub__',
 ):
 	setattr(DataSelection, m, _invalide_on_change(getattr(set, m)))
