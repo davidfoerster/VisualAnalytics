@@ -5,6 +5,7 @@ from data_selection import DataSelection
 import numpy as np
 import pyqtgraph as pg
 import scipy.spatial
+import math
 
 
 class TreeScatterPlotItem(pg.ScatterPlotItem):
@@ -74,6 +75,24 @@ class TreeScatterPlotItem(pg.ScatterPlotItem):
 			ssy *= pv[1].y()
 
 		return pg.Point(ssx, ssy)
+
+
+	def pointsIn(self, rect):
+		if rect.isNull():
+			return tuple()
+
+		diag_length = math.sqrt(rect.width()**2 + rect.height()**2)
+		center = rect.center()
+		candidates = self.data_tree.query_ball_point((center.x(), center.y()), diag_length * 0.5)
+		return filter(lambda p_idx: self._isPointIn(p_idx, rect), candidates)
+
+
+	def _isPointIn(self, p_idx, rect):
+		if not (0 <= p_idx < self.data.size):
+			return False
+
+		point = self.data_tree.data[p_idx]
+		return rect.contains(point[0], point[1])
 
 
 class SelectableScatterPlotItem(TreeScatterPlotItem):
