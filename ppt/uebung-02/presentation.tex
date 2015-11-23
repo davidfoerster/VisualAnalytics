@@ -2,8 +2,12 @@
 
 \usepackage{amsmath}
 \usepackage{amssymb}
+%\usepackage{textcomp}
 \usepackage[ngerman]{babel}
 \usepackage{graphicx}
+\usepackage{color}
+\usepackage{listings}
+\usepackage{lmodern}
 \usepackage[T1]{fontenc}
 \usepackage[utf8x]{inputenc}
 
@@ -17,6 +21,23 @@
 \setbeamercolor{frametitle}{fg=white,bg=structure}
 \setbeamercolor{theorem}{fg=black,bg=structure!30}
 \setbeamercovered{transparent}
+
+\definecolor{mygreen}{rgb}{0, 0.6, 0}
+\definecolor{mymauve}{rgb}{0.58, 0, 0.82}
+
+\lstset{
+	language=Python,
+	breaklines=true,
+	tabsize=4,
+	%basicstyle=\ttfamily,
+	keywordstyle=\color{blue},
+	stringstyle=\color{mymauve},
+	commentstyle=\color{mygreen},
+	otherkeywords={
+		None,False,True,
+		self,
+		bytes}
+}
 
 % meta informations for title page
 \title{Übung 2}
@@ -34,92 +55,163 @@
     \logo % logo only appears on title page
 
     \section{Aufgabe 1}
-    \begin{frame}{Datenstruktur(en)}
-        \begin{itemize}
-	        \setlength\itemsep{1em}
-        	\item 
-        \end{itemize}
+    \begin{frame}[containsverbatim]
+	    \frametitle{Dateneingabe}
+      \begin{itemize}
+        \setlength\itemsep{1em}
+      	\item als Tupel: \lstinline{(bytes(Zeitpunkt), int64(klein), int64(gross))}
+      	\item einlesen und parsen mit \lstinline{numpy.genfromtext(...)}
+      \end{itemize}
+			\begin{lstlisting}
+data = numpy.genfromtxt(
+	data_pathname,
+	dtype = [
+		('date', '|S19'),
+		('small', 'i8'),
+		('large', 'i8')],
+	delimiter = ';',
+	names = ["date", "small", "large"])
+			\end{lstlisting}
     \end{frame}
-    
-    \begin{frame}{Funktionalität}
+
+    \begin{frame}[containsverbatim]
+    \frametitle{Plotting}
     	\begin{itemize}
     		\setlength\itemsep{1em}
-    		\item 
+    		\item darstellen mit \lstinline{pyqtgraph.ScatterPlotItem}
+    		\item Achsenbeschriftungen, -abschnitte und Hilfslinien kommen (fast) frei Haus
     	\end{itemize}
+    	\begin{lstlisting}
+sp = pyqtgraph.ScatterPlotItem(
+	data['small'], data['large'],
+	pen=None, symbol='o')
+form.graphicsView.addItem(sp)
+form.graphicsView.setLabel(
+	axis='left', text='large')
+form.graphicsView.setLabel(
+	axis='bottom', text='small')
+form.graphicsView.showGrid(True, True)
+sp.show()
+			\end{lstlisting}
     \end{frame}
 
     \section{Aufgabe 2}
-    \begin{frame}{Datenstruktur(en)}
+    \begin{frame}[containsverbatim]
+    	\frametitle{Datenstruktur(en)}
     	\begin{itemize}
     		\setlength\itemsep{1em}
-    		\item 
+    		\item C-Implementierung eines $k$-dimensionalen Suchbaums für Punkte (\lstinline{scipy.spatial.cKDTree})
     	\end{itemize}
+    	\begin{lstlisting}
+tree = scipy.spatial.cKDTree(
+	np.vstack((data['x'], data['y'])).transpose())
+nearest_neighbors = tree.query(
+	[event.pos()], 1, 0, 2, point_radius)[1]
+    	\end{lstlisting}
+    	(Achtung: Plot-Kreise sind im Objektraum tatsächlich Ellipsen!)
     \end{frame}
-    
-    \begin{frame}{Funktionalität}
+
+    \begin{frame}[containsverbatim]
+    	\frametitle{Tooltip}
     	\begin{itemize}
     		\setlength\itemsep{1em}
-    		\item 
+    		\item bei Mausbewegung suche Punkt unter Zeiger
+    		\item zeichne Infotext neben Punkt
     	\end{itemize}
+    	\begin{lstlisting}
+	self.tooltip = pyqtgraph.TextItem()
+
+def onMove(self, scene_pos):
+	pos = self.scatterpoints.mapFromScene(scene_pos)
+	nn = self.scatterpoints.pointsAt(pos)
+	if nn is not None:
+		s = self.data[nn]
+		self.tooltip.setText('...'.format(*s))
+		self.tooltip.setPos(s[1], s[2])
+		self.tooltip.show()
+	else:
+		self.tooltip.hide()
+    	\end{lstlisting}
     \end{frame}
 
     \section{Aufgabe 3}
-    \begin{frame}{Datenstruktur(en)}
+    \begin{frame}[containsverbatim]
+    	\frametitle{Einzelauswahl}
     	\begin{itemize}
     		\setlength\itemsep{1em}
-    		\item 
+    		\item bilde Punktauswahl als Hashset von Tupelindizes ab
+    		\item Mausklick fügt Punkt(index) hinzu bzw.\ entfernt einen vorhandenen
     	\end{itemize}
+    	\begin{lstlisting}
+def mouseClickEvent(self, ev):
+	if ev.button() == Qt.LeftButton:
+		pt_idx = self.pointsAt(ev.pos())
+		if pt_idx is not None:
+			pt = self.point(pt_idx)
+			selected = self.selection.flip(pt_idx)
+			pt.setBrush(
+				brush2 if selected else brush1)
+			ev.accept()
+			return
+	ev.ignore()
+			\end{lstlisting}
     \end{frame}
-    
-    \begin{frame}{Funktionalität}
+
+    \begin{frame}[containsverbatim]
+    	\frametitle{Bereichsauswahl}
     	\begin{itemize}
     		\setlength\itemsep{1em}
-    		\item 
+    		\item implementiere \lstinline{mouseDragEvent}
+    		\item zeichne Auswahlrechteck so lange linke Maustaste gedrückt
+    		\item sobald losgelassen, suche darin liegende Punkte im 2-D-Baum (analog zu Einzelauswahl)
+    			\begin{itemize}
+    				\item \lstinline{cKDTree} kann nur in Kreisen suchen
+    				\item suche in Rechteckaußenkreis und filtere Ergebnis
+    			\end{itemize}
+    		\item füge Punkte der Auswahl hinzu bzw.\ entferne sie bei gedrückter Umschalttaste
     	\end{itemize}
     \end{frame}
 
     \section{Aufgabe 4}
-    \begin{frame}{Datenstruktur(en)}
+    \begin{frame}[containsverbatim]
+    	\frametitle{Statistik-Tooltip}
     	\begin{itemize}
-    		\setlength\itemsep{1em}
-    		\item 
+    		\item Variante des Tooltip-Texts aus Aufgabe 2
+    		\item falls Punkt unter Mauszeiger in Auswahl, zeige Statistik zur Menge ausgewählter Punkte
+    		\item Berechnung erfolgt bei Bedarf
+    			\begin{itemize}
+    				\item Ergebnis wird zwischengespeichert
+    				\item \ldots und bei Auswahlveränderung verworfen
+    				\item realisiert mittels der Erweiterung \lstinline{class DataSelection(set)}
+    			\end{itemize}
     	\end{itemize}
     \end{frame}
-    
-    \begin{frame}{Funktionalität}
-    	\begin{itemize}
-    		\setlength\itemsep{1em}
-    		\item 
-    	\end{itemize}
-    \end{frame}
-    
+
     \section{Aufgabe 5}
-    \begin{frame}{Datenstruktur(en)}
-    	\begin{itemize}
-    		\setlength\itemsep{1em}
-    		\item 
-    	\end{itemize}
-    \end{frame}
-    
     \begin{frame}{Funktionalität}
     	\begin{itemize}
     		\setlength\itemsep{1em}
-    		\item 
+    		\item PyQtGraph hat diese Funktionalität bereits:
+		  		\begin{description}
+						\item[Mauszeiger bei gedrückter rechter Taste ziehen:] stufenlos in die jeweilige Bewegungsrichtung
+						\item[Mausrad:] in Stufen bei bestehendem Seitenverhältnis
+					\end{description}
     	\end{itemize}
     \end{frame}
-    
+
     \section{Aufgabe 6}
     \begin{frame}{Datenstruktur(en)}
     	\begin{itemize}
     		\setlength\itemsep{1em}
-    		\item 
+    		\item
     	\end{itemize}
     \end{frame}
-    
+
+    \section{Aufgabe 7}
     \begin{frame}{Funktionalität}
     	\begin{itemize}
     		\setlength\itemsep{1em}
-    		\item 
+    		\item wie Aufgabe 4 mit ein paar zusätzlichen Statistikfuntionen aus dem \lstinline{numpy}-Modul
     	\end{itemize}
     \end{frame}
 
@@ -127,14 +219,14 @@
     \begin{frame}{Datenstruktur(en)}
     	\begin{itemize}
     		\setlength\itemsep{1em}
-    		\item 
+    		\item
     	\end{itemize}
     \end{frame}
-    
+
     \begin{frame}{Funktionalität}
     	\begin{itemize}
     		\setlength\itemsep{1em}
-    		\item 
+    		\item
     	\end{itemize}
     \end{frame}
 
@@ -142,14 +234,14 @@
     \begin{frame}{Datenstruktur(en)}
     	\begin{itemize}
     		\setlength\itemsep{1em}
-    		\item 
+    		\item
     	\end{itemize}
     \end{frame}
-    
+
     \begin{frame}{Funktionalität}
     	\begin{itemize}
     		\setlength\itemsep{1em}
-    		\item 
+    		\item
     	\end{itemize}
     \end{frame}
 
@@ -157,18 +249,18 @@
     \begin{frame}{Datenstruktur(en)}
     	\begin{itemize}
     		\setlength\itemsep{1em}
-    		\item 
+    		\item
     	\end{itemize}
     \end{frame}
-    
+
     \begin{frame}{Funktionalität}
     	\begin{itemize}
     		\setlength\itemsep{1em}
-    		\item 
+    		\item
     	\end{itemize}
     \end{frame}
-    
-    \section{Leistungen} 
+
+    \section{Leistungen}
     \begin{frame}{Eigene Leistungen}
     	\begin{itemize}
 	    	\setlength\itemsep{1em}
@@ -180,11 +272,16 @@
 	    	\end{itemize}
     		\item David
     		\begin{itemize}
-    			\item umfangreiches Refactoring
-    			\item umfangreiche algorithmische Verbesserungen (u. a. k-dimenstionaler-Baum)
-    			\item Punkt- und bereichsauswahl und deren Darstellung
-    			\item zwischengespeicherte, nur bei Bedarf aktualisierte Statistiken
+    			\item Punkt- und bereichsauswahl und deren Darstellung (A.\ 3)
+    			\item Refactoring (aufgabenspezifische Klassen statt „Gottobjekt“)
+    			\item algorithmische Verbesserungen
+    				\begin{itemize}
+    					\item k-dimensionaler-Baum
+    					\item Hashset statt Liste für ausgewählte Punkte
+    					\item zwischengespeicherte, nur bei Bedarf aktualisierte Statistiken über Punktmengen (A.\ 4)
+    				\end{itemize}
     			\item Build- und Paktierskripte (für die Abgabe)
+    			\item Folieninhalte
     		\end{itemize}
     		\item Benjamin
     		\begin{itemize}
@@ -194,5 +291,5 @@
     		\end{itemize}
     	\end{itemize}
     \end{frame}
-    
+
 \end{document}
