@@ -17,6 +17,10 @@ class TreeScatterPlotItem(pg.ScatterPlotItem):
 
 	def addPoints(self, *args, **kargs):
 		super().addPoints(*args, **kargs)
+		self._update_tree()
+
+
+	def _update_tree(self):
 		data = self.data
 		self.data_tree = scipy.spatial.cKDTree(np.vstack((data['x'], data['y'])).transpose())
 
@@ -100,7 +104,7 @@ class SelectableScatterPlotItem(TreeScatterPlotItem):
 	def __init__(self, *args, **kargs):
 		self.selection = None
 		super().__init__(*args, **kargs)
-		self.selection = DataSelection(self.data_tree.data, kargs.get('statKeys'))
+		self.selection = DataSelection(self.data_tree.data)
 
 		selected_pen = self.opts.get('selectedPen')
 		if selected_pen is None:

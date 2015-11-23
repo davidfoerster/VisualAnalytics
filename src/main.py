@@ -326,7 +326,8 @@ class Plot:
 				rect = self.scene.addRect(2 * dayIndex, 1, 1, 10, self.pen)
 				rect.setToolTip(bytes.decode(d))
 
-		self.scatterpoints = SelectableScatterPlotItem(small, large, pen=None, symbol='o', statKeys=('small', 'large'), **kwargs)
+		self.scatterpoints = SelectableScatterPlotItem(small, large, pen=None, symbol='o', **kwargs)
+		self.scatterpoints.selection.change_listeners.append(self.display_selection_info)
 		self.form.graphicsView.addItem(self.scatterpoints)
 		self.form.graphicsView.setLabel(axis = 'left', text = 'large')
 		self.form.graphicsView.setLabel(axis = 'bottom', text = 'small')

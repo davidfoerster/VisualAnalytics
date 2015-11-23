@@ -1,10 +1,13 @@
+import numpy
+
+
 class DataSelection(set):
 
-	def __init__(self, dataset=None, stat_keys=None):
+	def __init__(self, dataset=None):
 		super().__init__()
+		self._as_list = []
 		self._dataset = dataset
 		self._stats = dict()
-		self.stat_keys = stat_keys
 		self.change_listeners = []
 
 
@@ -20,13 +23,23 @@ class DataSelection(set):
 
 
 	def invalidate(self):
+		self._as_list.clear()
 		self._stats.clear()
 		for cl in self.change_listeners:
 			cl(self)
 
 
+	"""
+	Never modify the returned list!
+	"""
+	def as_list(self):
+		if self and not self._as_list:
+			self._as_list.extend(self)
+		return self._as_list
+
+
 	def values(self):
-		return map(self._dataset.__getitem__, self)
+		return self._dataset[self.as_list()]
 
 
 	def flip(self, item):
@@ -40,27 +53,20 @@ class DataSelection(set):
 
 
 	def get_stat(self, func, name=None):
-		if isinstance(func, str):
-			name = func
-			func = None
-		elif name is None and callable(func):
-			name = func.__name__
-		else:
-			raise TypeError()
+		if name is None:
+			if isinstance(func, str):
+				name = func
+			else:
+				name = func.__name__
 
 		stat = self._stats.get(name)
 		if stat is None:
-			if self.stat_keys is None:
-				stat = func(self.values())
+			if isinstance(func, str):
+				stat = getattr(numpy, func)(self.values(), 0)
 			else:
-				stat = [func(map(self._dataset[k].__getitem__, self)) for k in self.stat_keys]
+				stat = func(self.values())
 			self._stats[name] = stat
 		return stat
-
-
-	def mean(self):
-		from statistics import mean
-		return self.get_stat(mean)
 
 
 def _invalide_on_change(method):
@@ -72,7 +78,6 @@ def _invalide_on_change(method):
 		return rv
 
 	return change_wrapper
-
 
 for m in (
 	'add', 'remove', 'discard', 'pop', 'clear',
