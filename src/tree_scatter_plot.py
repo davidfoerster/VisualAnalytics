@@ -163,12 +163,24 @@ class SelectableScatterPlotItem(TreeScatterPlotItem):
 
 
 	def mouseDragEvent(self, ev):
-		rect_item = self.drag_rectangle
+		if ev.button() == Qt.LeftButton:
+			rect_item = self.drag_rectangle
+			if not ev.isFinish():
+				rect = QRectF(ev.buttonDownScenePos(), ev.scenePos()).normalized()
+				rect_item.setRect(rect)
+				rect_item.show()
+			else:
+				rect_item.hide()
+				rect = QRectF(ev.buttonDownPos(), ev.pos())
+				selected_points = tuple(self.pointsIn(rect))
+				select_mode = not (ev.modifiers() & Qt.ShiftModifier)
+				if select_mode:
+					self.selection.update(selected_points)
+				else:
+					self.selection.difference_update(selected_points)
+				self._setSelectionBrush(select_mode, *selected_points)
 
-		if not ev.isFinish():
-			rect_item.setRect(QtCore.QRectF(ev.buttonDownScenePos(), ev.scenePos()).normalized())
-			rect_item.show()
+			ev.accept()
+
 		else:
-			rect_item.hide()
-
-		ev.accept()
+			ev.ignore()
