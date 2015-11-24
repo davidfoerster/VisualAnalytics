@@ -200,11 +200,25 @@ def mouseClickEvent(self, ev):
     \end{frame}
 
     \section{Aufgabe 6}
-    \begin{frame}{Datenstruktur(en)}
+    \begin{frame}[containsverbatim]
+    	\frametitle{Datenstruktur(en)}
     	\begin{itemize}
     		\setlength\itemsep{1em}
-    		\item
+    		\item Filter-Fenster erzeugen und TreeWidget füllen
+    		\item Filterfunktionalität für Monat und Tag
     	\end{itemize}
+    	\begin{lstlisting}
+for s in self.new_data:
+	decode_date = s[0].decode("utf-8")
+	if timeInterval not in decode_date:
+		self.new_data = np.delete(self.new_data, index)
+	if (len(self.new_data) > 0):
+		self.data = self.new_data
+		if len(self.data) > 0:
+			self.plotFilterRange(...)
+		else:
+			msgBox.setText("No data exists for the filter!")
+    	\end{lstlisting}
     \end{frame}
 
     \section{Aufgabe 7}
@@ -216,25 +230,30 @@ def mouseClickEvent(self, ev):
     \end{frame}
 
     \section{Aufgabe 8}
-    \begin{frame}{Datenstruktur(en)}
+    \begin{frame}[containsverbatim]
+    	\frametitle{Datenstruktur(en)}
     	\begin{itemize}
-    		\setlength\itemsep{1em}
-    		\item
+    		\item 2 Filter-Slides im Filter-Fenster hinzufügen
     	\end{itemize}
-    \end{frame}
-
-    \begin{frame}{Funktionalität}
-    	\begin{itemize}
-    		\setlength\itemsep{1em}
-    		\item
-    	\end{itemize}
+    	\begin{lstlisting}
+for s in self.new_data:
+	decode_date = s[0].decode("utf-8")
+	if (fromDate in decode_date) and isDeletePoint:
+		isDeletePoint = False
+	if (toDate in decode_date) and not isDeletePoint:
+		isDeletePoint = True
+	if isDeletePoint:
+		self.new_data = np.delete(self.new_data, index)
+	else:
+		index += 1
+    	\end{lstlisting}
     \end{frame}
 
     \section{Aufgabe 9}
     \begin{frame}{Datenstruktur(en)}
     	\begin{itemize}
     		\setlength\itemsep{1em}
-    		\item
+    		\item Erzeugen der Timeline
     	\end{itemize}
     \end{frame}
 
@@ -246,18 +265,19 @@ def mouseClickEvent(self, ev):
     \end{frame}
 
     \section{Aufgabe 11}
-    \begin{frame}{Datenstruktur(en)}
+    \begin{frame}[containsverbatim]
+    	\frametitle{Datenstruktur(en)}
     	\begin{itemize}
     		\setlength\itemsep{1em}
-    		\item
+    		\item Undo-Funktion aktuell für max. 3 Schritte
     	\end{itemize}
-    \end{frame}
-
-    \begin{frame}{Funktionalität}
-    	\begin{itemize}
-    		\setlength\itemsep{1em}
-    		\item
-    	\end{itemize}
+    	\begin{lstlisting}
+def undoFunction(self):
+	self.new_data = self.undo_data1
+	self.undo_data1 = self.undo_data2
+	self.data = self.new_data
+	self.plotFilterRange(...)
+    	\end{lstlisting}
     \end{frame}
 
     \section{Leistungen}
