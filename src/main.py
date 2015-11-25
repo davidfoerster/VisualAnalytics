@@ -3,8 +3,10 @@
 import os.path
 import sys
 
+from scipy import stats, special
 import numpy as np
 import pyqtgraph as pg
+from PyQt4.QtCore import *
 from PyQt4.QtGui import *
 import window_ui
 import widgetwin_ui
@@ -19,7 +21,7 @@ def _main(*args):
 	Weil die Ladedauer sehr hoch ist, wird erstmal nur der Datensatz mit allen Messdaten aus Januar verwendet. Beachtet dies bei den Filtern.
 	"""
 
-	data_path = args[0] if args else (_bindir + '/data/January.txt')
+	data_path = args[0] if args else (_bindir + '/data/daten-klein.dat')
 	data = np.genfromtxt(data_path,
 		dtype = [('date', '|S19'), ('small', 'i8'), ('large', 'i8')], delimiter = ';',
 		names = ["date", "small", "large"])
@@ -229,16 +231,16 @@ class Plot:
 
 
 	def onDelete(self):
-		if len(self.selectedPoints) > 0:
+		if len(self.scatterpoints.selection) > 0:
 			self.undo_data2 = self.undo_data1
 			self.undo_data1 = self.new_data  # undo_data1 speichert die Datenmenge vor dem Bearbeiten
 			index = 0
 			for s in self.new_data:
-				for p in self.selectedPoints:
+				for p in self.scatterpoints.selection:
 					if p[0] == s[0]:
 						self.new_data = np.delete(self.new_data, index)
 						index = index - 1  # new_data wird kleiner, darum darf der Index nicht wachsen.
-						del self.selectedPoints[self.selectedPoints.index(p)]
+						del self.scatterpoints.selection[self.scatterpoints.selection.index(p)]
 				index = index + 1
 			self.data = self.new_data  # somit kann weiterhin mit data['small'] und data['large'] gearbeitet werden.
 
@@ -318,6 +320,16 @@ class Plot:
 			msgBox.exec_()
 
 
+	def fitline(self):
+		slope, intercept, r_value, p_value, std_err = stats.linregress(self.data['small'], self.data['large'])
+		line = pg.InfiniteLine(QPointF(0, intercept), np.arctan2(slope, 1))
+		if len(self.data['small']) > 2: # bei N == 2 wuerde man durch 0 teilen
+			chi2 = sum(self.data['large']-slope*self.data['small']-intercept)**2 / (len(self.data['small'])-2)
+			q = special.gammainc(.5*(len(self.data['small'])-2), .5*chi2)
+			line.setToolTip('a = %f\nb = %f\np = %f\nr = %f' % (slope, intercept, q, r_value))
+		self.form.graphicsView.addItem(line)
+
+
 	def plotFilterRange(self, small, large, dates, **kwargs):
 		self.form = MainWindow()
 		# self.form.move(300, 300)
@@ -347,6 +359,7 @@ class Plot:
 		self.form.btnQuit.clicked.connect(self.onQuit)
 		self.form.btnDelete.clicked.connect(self.onDelete)
 		self.form.btnUndo.clicked.connect(self.undoFunction)
+		self.form.actionFitLine.triggered.connect(self.fitline)
 		print("len Filter: ", len(self.new_data))
 
 
