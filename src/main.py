@@ -3,6 +3,7 @@
 import os.path
 import sys
 
+import math
 from scipy import stats, special
 import numpy as np
 import pyqtgraph as pg
@@ -57,6 +58,7 @@ class Plot:
 	def __init__(self, data = None):
 		self.data = data
 		self.form = None
+		self.line = None
 		self.scatterpoints = None
 		self.tooltip = None
 		self.scene = QGraphicsScene()
@@ -236,11 +238,11 @@ class Plot:
 			self.undo_data1 = self.new_data  # undo_data1 speichert die Datenmenge vor dem Bearbeiten
 			index = 0
 			for s in self.new_data:
-				for p in self.scatterpoints.selection:
-					if p[0] == s[0]:
+				for p in self.scatterpoints.selection.copy():
+					if self.new_data[p] == s:
 						self.new_data = np.delete(self.new_data, index)
 						index = index - 1  # new_data wird kleiner, darum darf der Index nicht wachsen.
-						del self.scatterpoints.selection[self.scatterpoints.selection.index(p)]
+						self.scatterpoints.selection.remove(p)
 				index = index + 1
 			self.data = self.new_data  # somit kann weiterhin mit data['small'] und data['large'] gearbeitet werden.
 
@@ -321,13 +323,37 @@ class Plot:
 
 
 	def fitline(self):
-		slope, intercept, r_value, p_value, std_err = stats.linregress(self.data['small'], self.data['large'])
-		line = pg.InfiniteLine(QPointF(0, intercept), np.arctan2(slope, 1))
-		if len(self.data['small']) > 2: # bei N == 2 wuerde man durch 0 teilen
-			chi2 = sum(self.data['large']-slope*self.data['small']-intercept)**2 / (len(self.data['small'])-2)
-			q = special.gammainc(.5*(len(self.data['small'])-2), .5*chi2)
-			line.setToolTip('a = %f\nb = %f\np = %f\nr = %f' % (slope, intercept, q, r_value))
-		self.form.graphicsView.addItem(line)
+		xs = None
+		ys = None
+
+		if len(self.scatterpoints.selection) > 0:
+			xs = [self.data['small'][p] for p in self.scatterpoints.selection]
+			ys = [self.data['large'][p] for p in self.scatterpoints.selection]
+		else:
+			xs = self.data['small']
+			ys = self.data['large']
+
+		n = len(xs)
+		s_x = sum(xs)
+		s_y = sum(ys)
+		t_i = [x-s_x/n for x in xs]
+		s_tt = sum([t**2 for t in t_i])
+		b = sum([t*y for t in t_i for y in ys]) / s_tt
+		a = (s_y - s_x*b) / n
+
+		if self.line is not None:
+			self.form.graphicsView.removeItem(self.line)
+
+		self.line = pg.InfiniteLine(QPointF(0, b), np.arctan2(a, 1))
+		if n > 2: # bei n == 2 wuerde man durch 0 teilen
+			chi_2 = sum((ys-a-b*xs)**2) / (n-2)
+			q = special.gammainc(.5*(n-2), .5*chi_2)
+			sigma_a = math.sqrt((1 + s_x**2 / (n*s_tt)) / n)
+			sigma_b = math.sqrt(1 / s_tt)
+			cov_ab = -s_x / (n*s_tt)
+			r = cov_ab / (sigma_a*sigma_b)
+			self.line.setToolTip('a = %f\nb = %f\np = %f\nr = %f' % (a, b, q, r))
+		self.form.graphicsView.addItem(self.line)
 
 
 	def plotFilterRange(self, small, large, dates, **kwargs):
