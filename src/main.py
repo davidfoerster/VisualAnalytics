@@ -237,9 +237,12 @@ class Plot:
 			self.undo_data2 = self.undo_data1
 			self.undo_data1 = self.new_data  # undo_data1 speichert die Datenmenge vor dem Bearbeiten
 			index = 0
+			index_deff = 0
 			for s in self.new_data:
 				for p in self.scatterpoints.selection.copy():
-					if self.new_data[index] == s:
+					r = p-index_deff #Index-Differenz beim Löschen von Elementen aus new_data und p
+					if self.new_data[r] == s:
+						index_deff = index_deff +1
 						self.new_data = np.delete(self.new_data, index)
 						index = index - 1  # new_data wird kleiner, darum darf der Index nicht wachsen.
 						self.scatterpoints.selection.remove(p)
