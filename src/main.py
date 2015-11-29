@@ -239,7 +239,7 @@ class Plot:
 			index = 0
 			for s in self.new_data:
 				for p in self.scatterpoints.selection.copy():
-					if self.new_data[p] == s:
+					if self.new_data[index] == s:
 						self.new_data = np.delete(self.new_data, index)
 						index = index - 1  # new_data wird kleiner, darum darf der Index nicht wachsen.
 						self.scatterpoints.selection.remove(p)
