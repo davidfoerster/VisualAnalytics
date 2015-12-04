@@ -326,37 +326,49 @@ class Plot:
 
 
 	def fitline(self):
-		xs = None
-		ys = None
+		if self.form.actionFitLine.isChecked():
+			xs = None
+			ys = None
 
-		if len(self.scatterpoints.selection) > 0:
-			xs = [self.data['small'][p] for p in self.scatterpoints.selection]
-			ys = [self.data['large'][p] for p in self.scatterpoints.selection]
+			if len(self.scatterpoints.selection) > 0:
+				xs = [self.data['small'][p] for p in self.scatterpoints.selection]
+				ys = [self.data['large'][p] for p in self.scatterpoints.selection]
+			else:
+				xs = self.data['small']
+				ys = self.data['large']
+
+			n = len(xs)
+			s_x = sum(xs)
+			s_y = sum(ys)
+			t_i = [x-s_x/n for x in xs]
+			s_tt = sum([t**2 for t in t_i])
+			b = sum([t*y for t in t_i for y in ys]) / s_tt
+			a = (s_y - s_x*b) / n
+
+			self.line = pg.InfiniteLine(QPointF(0, b), np.arctan2(a, 1))
+			if n > 2: # bei n == 2 wuerde man durch 0 teilen
+				chi_2 = sum((ys-a-b*xs)**2) / (n-2)
+				q = special.gammainc(.5*(n-2), .5*chi_2)
+				sigma_a = math.sqrt((1 + s_x**2 / (n*s_tt)) / n)
+				sigma_b = math.sqrt(1 / s_tt)
+				cov_ab = -s_x / (n*s_tt)
+				r = cov_ab / (sigma_a*sigma_b)
+				self.line.setToolTip('a = %f\nb = %f\np = %f\nr = %f' % (a, b, q, r))
+			self.form.graphicsView.addItem(self.line)
 		else:
-			xs = self.data['small']
-			ys = self.data['large']
-
-		n = len(xs)
-		s_x = sum(xs)
-		s_y = sum(ys)
-		t_i = [x-s_x/n for x in xs]
-		s_tt = sum([t**2 for t in t_i])
-		b = sum([t*y for t in t_i for y in ys]) / s_tt
-		a = (s_y - s_x*b) / n
-
-		if self.line is not None:
 			self.form.graphicsView.removeItem(self.line)
 
-		self.line = pg.InfiniteLine(QPointF(0, b), np.arctan2(a, 1))
-		if n > 2: # bei n == 2 wuerde man durch 0 teilen
-			chi_2 = sum((ys-a-b*xs)**2) / (n-2)
-			q = special.gammainc(.5*(n-2), .5*chi_2)
-			sigma_a = math.sqrt((1 + s_x**2 / (n*s_tt)) / n)
-			sigma_b = math.sqrt(1 / s_tt)
-			cov_ab = -s_x / (n*s_tt)
-			r = cov_ab / (sigma_a*sigma_b)
-			self.line.setToolTip('a = %f\nb = %f\np = %f\nr = %f' % (a, b, q, r))
-		self.form.graphicsView.addItem(self.line)
+
+	def fitCubic(self):
+		if self.form.actionFitCubic.isChecked():
+			pass
+
+			# was ist Maximum-Likelihood
+			# wie berechnet man das Polynom
+			# wie stellt man es dar
+
+		else:
+			pass
 
 
 	def plotFilterRange(self, small, large, dates, **kwargs):
@@ -389,6 +401,7 @@ class Plot:
 		self.form.btnDelete.clicked.connect(self.onDelete)
 		self.form.btnUndo.clicked.connect(self.undoFunction)
 		self.form.actionFitLine.triggered.connect(self.fitline)
+		self.form.actionFitCubic.triggered.connect(self.fitCubic)
 		print("len Filter: ", len(self.new_data))
 
 
