@@ -2,6 +2,7 @@
 
 import os.path
 import sys
+import functools
 
 import numpy as np
 import pyqtgraph as pg
@@ -108,12 +109,7 @@ class Plot:
 
 		# Erzeuge Liste mit allen eingetragenen Monaten aus dem treeWidget
 		topLevelItem = self.wid.treeWidget.topLevelItem(0)
-		child_count = topLevelItem.childCount()
-		childs = []
-
-		for i in range(child_count):
-			item = topLevelItem.child(i)
-			childs.append(item)
+		childs = tuple(map(topLevelItem.child, range(topLevelItem.childCount())))
 
 		# Sliders
 		self.wid.sliderTo.setValue(365)
@@ -122,7 +118,7 @@ class Plot:
 		self.widForm.show()
 
 		# TreeWidget
-		self.wid.treeWidget.itemClicked.connect(lambda: self.onItemClick(childs))
+		self.wid.treeWidget.itemClicked.connect(functools.partial(self.onItemClick, childs))
 
 		# Buttons
 		self.wid.btnCancel.clicked.connect(self.onCancel)
