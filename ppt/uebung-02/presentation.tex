@@ -200,10 +200,13 @@ def mouseClickEvent(self, ev):
     \end{frame}
 
     \section{Aufgabe 6}
-    \begin{frame}{Datenstruktur(en)}
+    \begin{frame}
+    	\frametitle{Datenstrukturen(en) und Funktionalität}
     	\begin{itemize}
     		\setlength\itemsep{1em}
-    		\item
+    		\item Monate und Tage als Baumknoten in \lstinline{QTreeWidgetItem}
+    		\item Auslösen der Filteraktion löscht Punkte in nicht ausgewählten Zeitabschnitten aus dem Datensatz
+    		\item anschließend neuen Datensatz zeichnen
     	\end{itemize}
     \end{frame}
 
@@ -216,47 +219,30 @@ def mouseClickEvent(self, ev):
     \end{frame}
 
     \section{Aufgabe 8}
-    \begin{frame}{Datenstruktur(en)}
-    	\begin{itemize}
-    		\setlength\itemsep{1em}
-    		\item
-    	\end{itemize}
-    \end{frame}
-
     \begin{frame}{Funktionalität}
     	\begin{itemize}
     		\setlength\itemsep{1em}
-    		\item
+    		\item je ein \lstinline{QSlider} für Start- und Endtag
+    		\item Algorithmus analog zu Aufgabe 6 für ausgewählten Zeitabschnitt
     	\end{itemize}
     \end{frame}
 
     \section{Aufgabe 9}
-    \begin{frame}{Datenstruktur(en)}
-    	\begin{itemize}
-    		\setlength\itemsep{1em}
-    		\item
-    	\end{itemize}
-    \end{frame}
-
     \begin{frame}{Funktionalität}
     	\begin{itemize}
     		\setlength\itemsep{1em}
-    		\item
+    		\item erstelle Liste aller ausgewählten Tage
+    		\item pro ausgewählten Tag füge blaues Rechteck an Tagesposition in Zeitleiste ein
     	\end{itemize}
     \end{frame}
 
     \section{Aufgabe 11}
-    \begin{frame}{Datenstruktur(en)}
+    \begin{frame}{Datenstruktur(en) und Funktionalität}
     	\begin{itemize}
     		\setlength\itemsep{1em}
-    		\item
-    	\end{itemize}
-    \end{frame}
-
-    \begin{frame}{Funktionalität}
-    	\begin{itemize}
-    		\setlength\itemsep{1em}
-    		\item
+    		\item Historieneinträge sind „Kopien“ des ehemalig angezeigten Datensatzes
+    		\item derzeit bis zu zwei hart kodierte Historieneinträge
+    		\item „Rückgängig“-Aktion bewirkt die Wiederherstellung des letzten Eintrags
     	\end{itemize}
     \end{frame}
 
