@@ -73,11 +73,35 @@
      <x>0</x>
      <y>0</y>
      <width>800</width>
-     <height>21</height>
+     <height>18</height>
     </rect>
    </property>
+   <widget class="QMenu" name="menuAnalytics">
+    <property name="title">
+     <string>Analytics</string>
+    </property>
+    <addaction name="actionFitLine"/>
+    <addaction name="actionFitCubic"/>
+   </widget>
+   <addaction name="menuAnalytics"/>
   </widget>
   <widget class="QStatusBar" name="statusbar"/>
+  <action name="actionFitLine">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>FitLine</string>
+   </property>
+  </action>
+  <action name="actionFitCubic">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>FitCubic</string>
+   </property>
+  </action>
  </widget>
  <customwidgets>
   <customwidget>

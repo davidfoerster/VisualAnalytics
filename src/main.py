@@ -4,8 +4,11 @@ import os.path
 import sys
 import functools
 
+import math
+from scipy import stats, special
 import numpy as np
 import pyqtgraph as pg
+from PyQt4.QtCore import *
 from PyQt4.QtGui import *
 import window_ui
 import widgetwin_ui
@@ -20,7 +23,7 @@ def _main(*args):
 	Weil die Ladedauer sehr hoch ist, wird erstmal nur der Datensatz mit allen Messdaten aus Januar verwendet. Beachtet dies bei den Filtern.
 	"""
 
-	data_path = args[0] if args else (_bindir + '/data/January.txt')
+	data_path = args[0] if args else (_bindir + '/data/daten-klein.dat')
 	data = np.genfromtxt(data_path,
 		dtype = [('date', '|S19'), ('small', 'i8'), ('large', 'i8')], delimiter = ';',
 		names = ["date", "small", "large"])
@@ -56,6 +59,7 @@ class Plot:
 	def __init__(self, data = None):
 		self.data = data
 		self.form = None
+		self.line = None
 		self.scatterpoints = None
 		self.tooltip = None
 		self.scene = QGraphicsScene()
@@ -225,16 +229,19 @@ class Plot:
 
 
 	def onDelete(self):
-		if len(self.selectedPoints) > 0:
+		if len(self.scatterpoints.selection) > 0:
 			self.undo_data2 = self.undo_data1
 			self.undo_data1 = self.new_data  # undo_data1 speichert die Datenmenge vor dem Bearbeiten
 			index = 0
+			index_diff = 0
 			for s in self.new_data:
-				for p in self.selectedPoints:
-					if p[0] == s[0]:
+				for p in self.scatterpoints.selection.copy():
+					r = p-index_diff #Index-Differenz beim Löschen von Elementen aus new_data und p
+					if self.new_data[r] == s:
+						index_deff = index_diff +1
 						self.new_data = np.delete(self.new_data, index)
 						index = index - 1  # new_data wird kleiner, darum darf der Index nicht wachsen.
-						del self.selectedPoints[self.selectedPoints.index(p)]
+						self.scatterpoints.selection.remove(p)
 				index = index + 1
 			self.data = self.new_data  # somit kann weiterhin mit data['small'] und data['large'] gearbeitet werden.
 
@@ -314,6 +321,52 @@ class Plot:
 			msgBox.exec_()
 
 
+	def fitline(self):
+		if self.form.actionFitLine.isChecked():
+			xs = None
+			ys = None
+
+			if len(self.scatterpoints.selection) > 0:
+				xs = [self.data['small'][p] for p in self.scatterpoints.selection]
+				ys = [self.data['large'][p] for p in self.scatterpoints.selection]
+			else:
+				xs = self.data['small']
+				ys = self.data['large']
+
+			n = len(xs)
+			s_x = sum(xs)
+			s_y = sum(ys)
+			t_i = [x-s_x/n for x in xs]
+			s_tt = sum([t**2 for t in t_i])
+			b = sum([t*y for t in t_i for y in ys]) / s_tt
+			a = (s_y - s_x*b) / n
+
+			self.line = pg.InfiniteLine(QPointF(0, b), np.arctan2(a, 1))
+			if n > 2: # bei n == 2 wuerde man durch 0 teilen
+				chi_2 = sum((ys-a-b*xs)**2) / (n-2)
+				q = special.gammainc(.5*(n-2), .5*chi_2)
+				sigma_a = math.sqrt((1 + s_x**2 / (n*s_tt)) / n)
+				sigma_b = math.sqrt(1 / s_tt)
+				cov_ab = -s_x / (n*s_tt)
+				r = cov_ab / (sigma_a*sigma_b)
+				self.line.setToolTip('a = %f\nb = %f\np = %f\nr = %f' % (a, b, q, r))
+			self.form.graphicsView.addItem(self.line)
+		else:
+			self.form.graphicsView.removeItem(self.line)
+
+
+	def fitCubic(self):
+		if self.form.actionFitCubic.isChecked():
+			pass
+
+			# was ist Maximum-Likelihood
+			# wie berechnet man das Polynom
+			# wie stellt man es dar
+
+		else:
+			pass
+
+
 	def plotFilterRange(self, small, large, dates, **kwargs):
 		self.form = MainWindow()
 		# self.form.move(300, 300)
@@ -343,6 +396,8 @@ class Plot:
 		self.form.btnQuit.clicked.connect(self.onQuit)
 		self.form.btnDelete.clicked.connect(self.onDelete)
 		self.form.btnUndo.clicked.connect(self.undoFunction)
+		self.form.actionFitLine.triggered.connect(self.fitline)
+		self.form.actionFitCubic.triggered.connect(self.fitCubic)
 		print("len Filter: ", len(self.new_data))
 
 
