@@ -1,9 +1,12 @@
+PYUIC = python3 -m PyQt4.uic.pyuic
+
+
 DEPS = widgetwin_ui.py window_ui.py
 
 all: $(DEPS)
 
 %_ui.py: %.ui
-	pyuic4 -o "$@" "$<"
+	$(PYUIC) -o "$@" "$<"
 
 clean:
 	rm -f -- $(DEPS)
