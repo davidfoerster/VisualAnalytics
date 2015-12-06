@@ -196,19 +196,19 @@ class Plot:
 
 
 	def filterMonth(self, timeInterval):
+		# TODO: Use numpy.ndarray's range filter view instead of deleting tuples piece by piece
 		self.undo_data2 = self.undo_data1
 		self.undo_data1 = self.new_data
-		self.new_data = self.original_data
+		new_data = self.original_data
 		index = 0
-		for s in self.new_data:
+		for s in new_data:
 			decode_date = s[0].decode("utf-8")
-
-			if timeInterval not in decode_date:
-				self.new_data = np.delete(self.new_data, index)
-				index = index - 1  # new_data wird kleiner, darum darf der Index nicht wachsen.
-			index = index + 1
-		if (len(self.new_data) > 0):
-			self.data = self.new_data
+			if timeInterval in decode_date:
+				index += 1
+			else:
+				new_data = np.delete(new_data, index)
+		if new_data:
+			self.data = new_data
 			if len(self.data) > 0:
 				self.plotFilterRange(self.data['small'], self.data['large'], self.data['date'], autoDownsample = True)
 		else:
