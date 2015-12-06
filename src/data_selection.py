@@ -84,11 +84,12 @@ class DataSelection(set):
 
 
 	def __ixor__(self, other):
-		if not isinstance(other, collections.Set):
-			raise TypeError('\'{}\' object is not a set'.format(type(other).__name__))
 		if other:
 			super().__ixor__(other)
 			self.invalidate()
+		elif not isinstance(other, collections.Set):
+			raise TypeError('\'{}\' object is not a set'.format(type(other).__name__))
+		return self
 
 
 def _invalide_on_change(method):
