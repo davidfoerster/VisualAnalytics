@@ -331,8 +331,8 @@ class Plot:
 				ys = self.data['large']
 
 			n = len(xs)
-			s_x = np.sum(xs)
-			s_y = np.sum(ys)
+			s_x = np.sum(xs, dtype=float)
+			s_y = np.sum(ys, dtype=float)
 			t_i = xs - s_x / n
 			s_tt = np.sum(t_i * t_i)
 			b = np.sum(t_i * ys) / s_tt
