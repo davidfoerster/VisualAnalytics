@@ -5,7 +5,7 @@ import sys
 import functools
 
 import math
-from scipy import stats, special
+import scipy.special
 import numpy as np
 import pyqtgraph as pg
 from PyQt4.QtCore import *
@@ -323,10 +323,7 @@ class Plot:
 
 	def fitline(self):
 		if self.form.actionFitLine.isChecked():
-			xs = None
-			ys = None
-
-			if len(self.scatterpoints.selection) > 0:
+			if self.scatterpoints.selection:
 				xs = [self.data['small'][p] for p in self.scatterpoints.selection]
 				ys = [self.data['large'][p] for p in self.scatterpoints.selection]
 			else:
@@ -334,23 +331,25 @@ class Plot:
 				ys = self.data['large']
 
 			n = len(xs)
-			s_x = sum(xs)
-			s_y = sum(ys)
-			t_i = [x-s_x/n for x in xs]
-			s_tt = sum([t**2 for t in t_i])
-			b = sum([t*y for t in t_i for y in ys]) / s_tt
-			a = (s_y - s_x*b) / n
+			s_x = np.sum(xs)
+			s_y = np.sum(ys)
+			t_i = xs - s_x / n
+			s_tt = np.sum(t_i * t_i)
+			b = np.sum(t_i * ys) / s_tt
+			a = (s_y - s_x * b) / n
 
-			self.line = pg.InfiniteLine(QPointF(0, b), np.arctan2(a, 1))
-			if n > 2: # bei n == 2 wuerde man durch 0 teilen
-				chi_2 = sum((ys-a-b*xs)**2) / (n-2)
-				q = special.gammainc(.5*(n-2), .5*chi_2)
-				sigma_a = math.sqrt((1 + s_x**2 / (n*s_tt)) / n)
+			self.line = pg.InfiniteLine(QPointF(0, a), math.degrees(math.atan(b)))
+			if n > 2:  # bei n == 2 würde man durch 0 teilen
+				chi_2 = np.sum((ys - a - b * xs)**2) / (n - 2)
+				q = scipy.special.gammainc(.5 * (n - 2), .5 * chi_2)
+				sigma_a = math.sqrt((1 + s_x * s_x / (n * s_tt)) / n)
 				sigma_b = math.sqrt(1 / s_tt)
-				cov_ab = -s_x / (n*s_tt)
-				r = cov_ab / (sigma_a*sigma_b)
+				cov_ab = -s_x / (n * s_tt)
+				r = cov_ab / (sigma_a * sigma_b)
 				self.line.setToolTip('a = %f\nb = %f\np = %f\nr = %f' % (a, b, q, r))
+
 			self.form.graphicsView.addItem(self.line)
+
 		else:
 			self.form.graphicsView.removeItem(self.line)
 
