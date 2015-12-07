@@ -238,7 +238,7 @@ class Plot:
 				for p in self.scatterpoints.selection.copy():
 					r = p-index_diff #Index-Differenz beim Löschen von Elementen aus new_data und p
 					if self.new_data[r] == s:
-						index_diff = index_diff+1
+						index_diff = index_diff + 1
 						self.new_data = np.delete(self.new_data, index)
 						index = index - 1  # new_data wird kleiner, darum darf der Index nicht wachsen.
 						self.scatterpoints.selection.remove(p)
