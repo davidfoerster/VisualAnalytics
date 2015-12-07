@@ -322,35 +322,38 @@ class Plot:
 
 
 	def fitLine(self, *args):
-		if self.form.actionFitLine.isChecked() and len(self.data) > 2:
-			if self.scatterpoints.selection:
-				xs, ys = self.scatterpoints.selection.values().transpose()
-			else:
-				xs = self.data['small']
-				ys = self.data['large']
+		if not self.regression_lines:
+			return
 
-			n = len(xs)
-			s_x = np.sum(xs, dtype=float)
-			s_y = np.sum(ys, dtype=float)
-			t_i = xs - s_x / n
-			s_tt = np.sum(t_i * t_i)
-			b = np.sum(t_i * ys) / s_tt
-			a = (s_y - s_x * b) / n
-
-			self.regression_line.setValue(QPointF(0, a))
-			self.regression_line.setAngle(math.degrees(math.atan(b)))
-
-			chi_2 = np.sum((ys - a - b * xs)**2) / (n - 2)
-			q = scipy.special.gammainc(.5 * (n - 2), .5 * chi_2)
-			sigma_a = math.sqrt((1 + s_x * s_x / (n * s_tt)) / n)
-			sigma_b = math.sqrt(1 / s_tt)
-			cov_ab = -s_x / (n * s_tt)
-			r = cov_ab / (sigma_a * sigma_b)
-			self.regression_line.setToolTip('a = %f\nb = %f\np = %f\nr = %f' % (a, b, q, r))
-			self.regression_line.show()
-
-		else:
+		if not self.form.actionFitLine.isChecked() or len(self.data) <= 2:
 			self.regression_line.hide()
+			return
+
+		if self.scatterpoints.selection:
+			xs, ys = self.scatterpoints.selection.values().transpose()
+		else:
+			xs = self.data['small']
+			ys = self.data['large']
+
+		n = len(xs)
+		s_x = np.sum(xs, dtype=float)
+		s_y = np.sum(ys, dtype=float)
+		t_i = xs - s_x / n
+		s_tt = np.sum(t_i * t_i)
+		b = np.sum(t_i * ys) / s_tt
+		a = (s_y - s_x * b) / n
+
+		self.regression_line.setValue(QPointF(0, a))
+		self.regression_line.setAngle(math.degrees(math.atan(b)))
+
+		chi_2 = np.sum((ys - a - b * xs)**2) / (n - 2)
+		q = scipy.special.gammainc(.5 * (n - 2), .5 * chi_2)
+		sigma_a = math.sqrt((1 + s_x * s_x / (n * s_tt)) / n)
+		sigma_b = math.sqrt(1 / s_tt)
+		cov_ab = -s_x / (n * s_tt)
+		r = cov_ab / (sigma_a * sigma_b)
+		self.regression_line.setToolTip('a = %f\nb = %f\np = %f\nr = %f' % (a, b, q, r))
+		self.regression_line.show()
 
 
 	def fitCubic(self, *args):
