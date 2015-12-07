@@ -59,7 +59,7 @@ class Plot:
 	def __init__(self, data = None):
 		self.data = data
 		self.form = None
-		self.line = None
+		self.regression_line = None
 		self.scatterpoints = None
 		self.tooltip = None
 		self.scene = QGraphicsScene()
@@ -321,7 +321,7 @@ class Plot:
 			msgBox.exec_()
 
 
-	def fitline(self, *args):
+	def fitLine(self, *args):
 		if self.form.actionFitLine.isChecked() and len(self.data) > 2:
 			if self.scatterpoints.selection:
 				xs, ys = self.scatterpoints.selection.values().transpose()
@@ -337,8 +337,8 @@ class Plot:
 			b = np.sum(t_i * ys) / s_tt
 			a = (s_y - s_x * b) / n
 
-			self.line.setValue(QPointF(0, a))
-			self.line.setAngle(math.degrees(math.atan(b)))
+			self.regression_line.setValue(QPointF(0, a))
+			self.regression_line.setAngle(math.degrees(math.atan(b)))
 
 			chi_2 = np.sum((ys - a - b * xs)**2) / (n - 2)
 			q = scipy.special.gammainc(.5 * (n - 2), .5 * chi_2)
@@ -346,11 +346,11 @@ class Plot:
 			sigma_b = math.sqrt(1 / s_tt)
 			cov_ab = -s_x / (n * s_tt)
 			r = cov_ab / (sigma_a * sigma_b)
-			self.line.setToolTip('a = %f\nb = %f\np = %f\nr = %f' % (a, b, q, r))
-			self.line.show()
+			self.regression_line.setToolTip('a = %f\nb = %f\np = %f\nr = %f' % (a, b, q, r))
+			self.regression_line.show()
 
 		else:
-			self.line.hide()
+			self.regression_line.hide()
 
 
 	def fitCubic(self, *args):
@@ -395,13 +395,13 @@ class Plot:
 		self.form.btnDelete.clicked.connect(self.onDelete)
 		self.form.btnUndo.clicked.connect(self.undoFunction)
 
-		self.form.actionFitLine.triggered.connect(self.fitline)
+		self.form.actionFitLine.triggered.connect(self.fitLine)
 		self.form.actionFitCubic.triggered.connect(self.fitCubic)
-		self.scatterpoints.selection.change_listeners += (self.fitline, self.fitCubic)
+		self.scatterpoints.selection.change_listeners += (self.fitLine, self.fitCubic)
 
-		self.line = pg.InfiniteLine()
-		self.line.hide()
-		self.form.graphicsView.addItem(self.line)
+		self.regression_line = pg.InfiniteLine()
+		self.regression_line.hide()
+		self.form.graphicsView.addItem(self.regression_line)
 
 		print("len Filter: ", len(self.new_data))
 
