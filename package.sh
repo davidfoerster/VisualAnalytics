@@ -2,7 +2,9 @@
 set -eu -o pipefail
 printf -v series 'uebung-%02d' "$1"
 series_file="pack/$series-abgabe.tar.bz2"
-cd "${0/*}" 2>&- || true
+case "$0" in
+  */*) cd "${0%/*}";;
+esac
 
 find \
   src data/DateInDays.txt data/data-j-m doc run.sh "screenshot/$series" "spec/$series" \
