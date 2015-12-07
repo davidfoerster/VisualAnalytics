@@ -322,10 +322,9 @@ class Plot:
 
 
 	def fitline(self):
-		if self.form.actionFitLine.isChecked():
+		if self.form.actionFitLine.isChecked() and len(self.data) > 2:
 			if self.scatterpoints.selection:
-				xs = [self.data['small'][p] for p in self.scatterpoints.selection]
-				ys = [self.data['large'][p] for p in self.scatterpoints.selection]
+				xs, ys = self.scatterpoints.selection.values().transpose()
 			else:
 				xs = self.data['small']
 				ys = self.data['large']
@@ -338,20 +337,20 @@ class Plot:
 			b = np.sum(t_i * ys) / s_tt
 			a = (s_y - s_x * b) / n
 
-			self.line = pg.InfiniteLine(QPointF(0, a), math.degrees(math.atan(b)))
-			if n > 2:  # bei n == 2 würde man durch 0 teilen
-				chi_2 = np.sum((ys - a - b * xs)**2) / (n - 2)
-				q = scipy.special.gammainc(.5 * (n - 2), .5 * chi_2)
-				sigma_a = math.sqrt((1 + s_x * s_x / (n * s_tt)) / n)
-				sigma_b = math.sqrt(1 / s_tt)
-				cov_ab = -s_x / (n * s_tt)
-				r = cov_ab / (sigma_a * sigma_b)
-				self.line.setToolTip('a = %f\nb = %f\np = %f\nr = %f' % (a, b, q, r))
+			self.line.setValue(QPointF(0, a))
+			self.line.setAngle(math.degrees(math.atan(b)))
 
-			self.form.graphicsView.addItem(self.line)
+			chi_2 = np.sum((ys - a - b * xs)**2) / (n - 2)
+			q = scipy.special.gammainc(.5 * (n - 2), .5 * chi_2)
+			sigma_a = math.sqrt((1 + s_x * s_x / (n * s_tt)) / n)
+			sigma_b = math.sqrt(1 / s_tt)
+			cov_ab = -s_x / (n * s_tt)
+			r = cov_ab / (sigma_a * sigma_b)
+			self.line.setToolTip('a = %f\nb = %f\np = %f\nr = %f' % (a, b, q, r))
+			self.line.show()
 
 		else:
-			self.form.graphicsView.removeItem(self.line)
+			self.line.hide()
 
 
 	def fitCubic(self):
@@ -395,8 +394,14 @@ class Plot:
 		self.form.btnQuit.clicked.connect(self.onQuit)
 		self.form.btnDelete.clicked.connect(self.onDelete)
 		self.form.btnUndo.clicked.connect(self.undoFunction)
+
 		self.form.actionFitLine.triggered.connect(self.fitline)
 		self.form.actionFitCubic.triggered.connect(self.fitCubic)
+
+		self.line = pg.InfiniteLine()
+		self.line.hide()
+		self.form.graphicsView.addItem(self.line)
+
 		print("len Filter: ", len(self.new_data))
 
 
