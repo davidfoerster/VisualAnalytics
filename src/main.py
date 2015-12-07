@@ -13,6 +13,7 @@ from PyQt4.QtGui import *
 import window_ui
 import widgetwin_ui
 from tree_scatter_plot import SelectableScatterPlotItem
+import math_utils
 
 
 def _main(*args):
@@ -59,7 +60,7 @@ class Plot:
 	def __init__(self, data = None):
 		self.data = data
 		self.form = None
-		self.regression_lines = ()
+		self._regression_lines = ()
 		self.scatterpoints = None
 		self.tooltip = None
 		self.scene = QGraphicsScene()
@@ -321,49 +322,37 @@ class Plot:
 			msgBox.exec_()
 
 
-	def fitLine(self, *args):
-		lines = self.regression_lines
+	def _update_regression_line(self, *args):
+		lines = self._regression_lines
 		if not lines:
 			return
 
-		if not self.form.actionFitLine.isChecked() or len(self.data) <= 2:
-			for l in lines:
-				l.hide()
-			return
+		if self.form.actionFitLine.isChecked():
+			if self.scatterpoints.selection:
+				xs, ys = self.scatterpoints.selection.values().transpose()
+			else:
+				xs = self.data['small']
+				ys = self.data['large']
 
-		if self.scatterpoints.selection:
-			xs, ys = self.scatterpoints.selection.values().transpose()
-		else:
-			xs = self.data['small']
-			ys = self.data['large']
+			if len(xs) > 2:
+				a, b, q, r, sigma_a, sigma_b = math_utils.fitLine(xs, ys)
 
-		n = len(xs)
-		s_x = np.sum(xs, dtype=float)
-		s_y = np.sum(ys, dtype=float)
-		t_i = xs - s_x / n
-		s_tt = np.sum(t_i * t_i)
-		b = np.sum(t_i * ys) / s_tt
-		a = (s_y - s_x * b) / n
+				lines[0].setValue(QPointF(0, a))
+				lines[1].setValue(QPointF(0, a - sigma_a))
+				lines[2].setValue(QPointF(0, a + sigma_a))
 
-		chi_2 = np.sum((ys - a - b * xs)**2) / (n - 2)
-		q = scipy.special.gammainc(.5 * (n - 2), .5 * chi_2)
-		sigma_a = math.sqrt((1 + s_x * s_x / (n * s_tt)) / n)
-		sigma_b = math.sqrt(1 / s_tt)
-		cov_ab = -s_x / (n * s_tt)
-		r = cov_ab / (sigma_a * sigma_b)
+				lines[0].setAngle(math.degrees(math.atan(b)))
+				lines[1].setAngle(math.degrees(math.atan(b - sigma_b)))
+				lines[2].setAngle(math.degrees(math.atan(b + sigma_b)))
 
-		lines[0].setValue(QPointF(0, a))
-		lines[1].setValue(QPointF(0, a - sigma_a))
-		lines[2].setValue(QPointF(0, a + sigma_a))
+				lines[0].setToolTip('a = %f\nb = %f\np = %f\nr = %f' % (a, b, q, r))
 
-		lines[0].setAngle(math.degrees(math.atan(b)))
-		lines[1].setAngle(math.degrees(math.atan(b - sigma_b)))
-		lines[2].setAngle(math.degrees(math.atan(b + sigma_b)))
-
-		lines[0].setToolTip('a = %f\nb = %f\np = %f\nr = %f' % (a, b, q, r))
+				for l in lines:
+					l.show()
+				return
 
 		for l in lines:
-			l.show()
+			l.hide()
 
 
 	def fitCubic(self, *args):
@@ -408,16 +397,16 @@ class Plot:
 		self.form.btnDelete.clicked.connect(self.onDelete)
 		self.form.btnUndo.clicked.connect(self.undoFunction)
 
-		self.form.actionFitLine.triggered.connect(self.fitLine)
+		self.form.actionFitLine.triggered.connect(self._update_regression_line)
 		self.form.actionFitCubic.triggered.connect(self.fitCubic)
-		self.scatterpoints.selection.change_listeners += (self.fitLine, self.fitCubic)
+		self.scatterpoints.selection.change_listeners += (self._update_regression_line, self.fitCubic)
 
 		insecurity_line_pen = QPen(QColor.fromRgbF(1, 1, 0, 0.5))
-		self.regression_lines = (
+		self._regression_lines = (
 			pg.InfiniteLine(),
 			pg.InfiniteLine(pen=insecurity_line_pen),
 			pg.InfiniteLine(pen=insecurity_line_pen))
-		for l in self.regression_lines:
+		for l in self._regression_lines:
 			l.hide()
 			self.form.graphicsView.addItem(l)
 
