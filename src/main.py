@@ -5,7 +5,6 @@ import sys
 import functools
 
 import math
-import scipy.special
 import numpy as np
 import pyqtgraph as pg
 from PyQt4.QtCore import *

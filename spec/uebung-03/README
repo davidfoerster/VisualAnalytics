@@ -1,0 +1,9 @@
+math_util.fitLine - Implementierung des vorgegebenen "FitLine"-Algorithmus
+        nebst Güte, Korrelationskoeffizient und Unsicherheit
+
+main.Plot._update_regression_line - zeichnet Regressionlinie und
+        Unsicherheitsbereich für aktuellen Datensatz bzw. ausgewählte Punkte
+
+
+Eigenleistungen:
+ - im Wesentlichen die beiden oben genannten Funktionen

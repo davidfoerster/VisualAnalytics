@@ -4,6 +4,17 @@ import scipy.special
 
 
 def fitLine(xs, ys):
+	"""
+	Berechnet die lineare Regression zweier unabhängigen Zufallsvariablen
+
+	:param xs: Zufallsvariable 1
+	:param ys: Zufallsvariable 2
+	:return: a, b, q, r, sigma_a, sigma_b
+		a, b - Startwert und Steigung der affinen Zielfunktion
+		q - p-Wert als Gütemaß für die Regression hinsichtlich der Zufallsvariablen
+		r - Korrelationskoeffizient der Zufallsvariablen
+		sigma_a, sigma_b - Unsicherheitsbereiche von a un b
+	"""
 	n = len(xs)
 	if n <= 2:
 		return None

@@ -46,4 +46,5 @@ Eigene Leistung
     - Rechtecksuche auf k-D-Baum effizient mittels Umfangskreisen
     - Datenstruktur für ausgewählte Punkte
     - Punkt- und Bereichsauswahl
+    - Implementierung des "FitLine"-Algorithmus aus Aufgabenserie 3
     - viel, viel "glue code"
