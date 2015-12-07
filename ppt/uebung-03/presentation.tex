@@ -1,0 +1,99 @@
+\documentclass{beamer}
+
+\usepackage{amsmath}
+\usepackage{amssymb}
+%\usepackage{textcomp}
+\usepackage[ngerman]{babel}
+\usepackage{graphicx}
+\usepackage{color}
+\usepackage{listings}
+\usepackage{lmodern}
+\usepackage[T1]{fontenc}
+\usepackage[utf8x]{inputenc}
+
+\graphicspath{{./imgs/}}
+
+% customized theme
+\usetheme{CambridgeUS}
+\usecolortheme{whale}
+\beamertemplatenavigationsymbolsempty
+\setbeamertemplate{footline}[page number]
+\setbeamercolor{frametitle}{fg=white,bg=structure}
+\setbeamercolor{theorem}{fg=black,bg=structure!30}
+\setbeamercovered{transparent}
+
+\definecolor{mygreen}{rgb}{0, 0.6, 0}
+\definecolor{mymauve}{rgb}{0.58, 0, 0.82}
+
+\lstset{
+	language=Python,
+	breaklines=true,
+	tabsize=4,
+	%basicstyle=\ttfamily,
+	keywordstyle=\color{blue},
+	stringstyle=\color{mymauve},
+	commentstyle=\color{mygreen},
+	otherkeywords={
+		None,False,True,
+		self,
+		bytes}
+}
+
+% meta informations for title page
+\title{Übung 2}
+\subtitle{Visual Analytics für raumzeitliche Daten}
+\author{Christian Diehr \and Benjamin Drost \and David Foerster}
+\institute{Institut für Informatik\\Humboldt-Universität zu Berlin}
+\logo{\includegraphics[width=2cm,height=2cm]{../hulogo}}
+\date{08. Dezember 2015}
+
+\begin{document}
+
+    \begin{frame}
+        \titlepage
+    \end{frame}
+    \logo % logo only appears on title page
+
+    \section{Aufgabe 1}
+    \begin{frame}[containsverbatim]
+	    \frametitle{FitLine}
+			\begin{itemize}
+			\item Berechnung der FitLine mit Hilfe der Least-Square Methode
+			\end{itemize}
+    \end{frame}
+
+    \section{Aufgabe 2}
+    \begin{frame}[containsverbatim]
+    	\frametitle{Tooltip}
+    	\begin{itemize}
+    		\setlength\itemsep{1em}
+    		\item Tooltip setzen wie in Übung 2 Aufgabe 2
+    	\end{itemize}
+    	\begin{lstlisting}
+setToolTip('a=%f\nb=%f\np=%f\nr=%f' % (a, b, q, r))
+    	\end{lstlisting}
+    \end{frame}
+
+    
+    \section{Aufgabe 3}
+    \begin{frame}[containsverbatim]
+    	\frametitle{Regressionsgeraden}
+    	\begin{itemize}
+    		\setlength\itemsep{1em}
+    		\item 
+    	\end{itemize}
+    	\begin{lstlisting}
+
+			\end{lstlisting}
+    \end{frame}
+
+
+    \section{Aufgabe 4}
+    \begin{frame}[containsverbatim]
+    	\frametitle{Explorationsloop}
+    	\begin{itemize}
+    		\item 
+    	\end{itemize}
+    \end{frame}
+
+\end{document}
