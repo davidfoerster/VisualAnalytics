@@ -321,7 +321,7 @@ class Plot:
 			msgBox.exec_()
 
 
-	def fitline(self):
+	def fitline(self, *args):
 		if self.form.actionFitLine.isChecked() and len(self.data) > 2:
 			if self.scatterpoints.selection:
 				xs, ys = self.scatterpoints.selection.values().transpose()
@@ -353,7 +353,7 @@ class Plot:
 			self.line.hide()
 
 
-	def fitCubic(self):
+	def fitCubic(self, *args):
 		if self.form.actionFitCubic.isChecked():
 			pass
 
@@ -397,6 +397,7 @@ class Plot:
 
 		self.form.actionFitLine.triggered.connect(self.fitline)
 		self.form.actionFitCubic.triggered.connect(self.fitCubic)
+		self.scatterpoints.selection.change_listeners += (self.fitline, self.fitCubic)
 
 		self.line = pg.InfiniteLine()
 		self.line.hide()
