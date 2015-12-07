@@ -59,7 +59,7 @@ class Plot:
 	def __init__(self, data = None):
 		self.data = data
 		self.form = None
-		self.regression_line = None
+		self.regression_lines = ()
 		self.scatterpoints = None
 		self.tooltip = None
 		self.scene = QGraphicsScene()
@@ -322,11 +322,13 @@ class Plot:
 
 
 	def fitLine(self, *args):
-		if not self.regression_lines:
+		lines = self.regression_lines
+		if not lines:
 			return
 
 		if not self.form.actionFitLine.isChecked() or len(self.data) <= 2:
-			self.regression_line.hide()
+			for l in lines:
+				l.hide()
 			return
 
 		if self.scatterpoints.selection:
@@ -343,17 +345,25 @@ class Plot:
 		b = np.sum(t_i * ys) / s_tt
 		a = (s_y - s_x * b) / n
 
-		self.regression_line.setValue(QPointF(0, a))
-		self.regression_line.setAngle(math.degrees(math.atan(b)))
-
 		chi_2 = np.sum((ys - a - b * xs)**2) / (n - 2)
 		q = scipy.special.gammainc(.5 * (n - 2), .5 * chi_2)
 		sigma_a = math.sqrt((1 + s_x * s_x / (n * s_tt)) / n)
 		sigma_b = math.sqrt(1 / s_tt)
 		cov_ab = -s_x / (n * s_tt)
 		r = cov_ab / (sigma_a * sigma_b)
-		self.regression_line.setToolTip('a = %f\nb = %f\np = %f\nr = %f' % (a, b, q, r))
-		self.regression_line.show()
+
+		lines[0].setValue(QPointF(0, a))
+		lines[1].setValue(QPointF(0, a - sigma_a))
+		lines[2].setValue(QPointF(0, a + sigma_a))
+
+		lines[0].setAngle(math.degrees(math.atan(b)))
+		lines[1].setAngle(math.degrees(math.atan(b - sigma_b)))
+		lines[2].setAngle(math.degrees(math.atan(b + sigma_b)))
+
+		lines[0].setToolTip('a = %f\nb = %f\np = %f\nr = %f' % (a, b, q, r))
+
+		for l in lines:
+			l.show()
 
 
 	def fitCubic(self, *args):
@@ -402,9 +412,14 @@ class Plot:
 		self.form.actionFitCubic.triggered.connect(self.fitCubic)
 		self.scatterpoints.selection.change_listeners += (self.fitLine, self.fitCubic)
 
-		self.regression_line = pg.InfiniteLine()
-		self.regression_line.hide()
-		self.form.graphicsView.addItem(self.regression_line)
+		insecurity_line_pen = QPen(QColor.fromRgbF(1, 1, 0, 0.5))
+		self.regression_lines = (
+			pg.InfiniteLine(),
+			pg.InfiniteLine(pen=insecurity_line_pen),
+			pg.InfiniteLine(pen=insecurity_line_pen))
+		for l in self.regression_lines:
+			l.hide()
+			self.form.graphicsView.addItem(l)
 
 		print("len Filter: ", len(self.new_data))
 
