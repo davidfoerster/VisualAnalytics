@@ -15,7 +15,7 @@
   </property>
   <widget class="QWidget" name="centralwidget">
    <layout class="QGridLayout" name="gridLayout_2">
-    <item row="2" column="0" colspan="4">
+    <item row="2" column="0" colspan="5">
      <widget class="QGraphicsView" name="timeline">
       <property name="minimumSize">
        <size>
@@ -31,10 +31,27 @@
       </property>
      </widget>
     </item>
-    <item row="4" column="3">
+    <item row="4" column="4">
      <widget class="QPushButton" name="btnFilter">
       <property name="text">
        <string>Filter</string>
+      </property>
+     </widget>
+    </item>
+    <item row="3" column="0" colspan="5">
+     <widget class="PlotWidget" name="graphicsView"/>
+    </item>
+    <item row="4" column="1">
+     <widget class="QPushButton" name="btnUndo">
+      <property name="text">
+       <string>Undo</string>
+      </property>
+     </widget>
+    </item>
+    <item row="4" column="3">
+     <widget class="QPushButton" name="btnDelete">
+      <property name="text">
+       <string>Delete</string>
       </property>
      </widget>
     </item>
@@ -48,20 +65,10 @@
       </property>
      </widget>
     </item>
-    <item row="3" column="0" colspan="4">
-     <widget class="PlotWidget" name="graphicsView"/>
-    </item>
-    <item row="4" column="1">
-     <widget class="QPushButton" name="btnUndo">
-      <property name="text">
-       <string>Undo</string>
-      </property>
-     </widget>
-    </item>
     <item row="4" column="2">
-     <widget class="QPushButton" name="btnDelete">
+     <widget class="QPushButton" name="btnHistogram">
       <property name="text">
-       <string>Delete</string>
+       <string>Histogram</string>
       </property>
      </widget>
     </item>

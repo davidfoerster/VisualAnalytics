@@ -11,6 +11,7 @@ from PyQt4.QtCore import *
 from PyQt4.QtGui import *
 import window_ui
 import widgetwin_ui
+from histogram import HistogramWidget
 from tree_scatter_plot import SelectableScatterPlotItem
 import math_utils
 
@@ -368,6 +369,7 @@ class Plot:
 
 	def plotFilterRange(self, small, large, dates, **kwargs):
 		self.form = MainWindow()
+		self.histogram = HistogramWidget()
 		# self.form.move(300, 300)
 		self.form.timeline.setScene(self.scene)
 		self.form.timeline.setSceneRect(0, 0, 710, 10)
@@ -395,6 +397,7 @@ class Plot:
 		self.form.btnQuit.clicked.connect(self.onQuit)
 		self.form.btnDelete.clicked.connect(self.onDelete)
 		self.form.btnUndo.clicked.connect(self.undoFunction)
+		self.form.btnHistogram.clicked.connect(self.histogram.show)
 
 		self.form.actionFitLine.triggered.connect(self._update_regression_line)
 		self.form.actionFitCubic.triggered.connect(self.fitCubic)
