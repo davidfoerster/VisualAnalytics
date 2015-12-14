@@ -103,8 +103,10 @@ class SelectableScatterPlotItem(TreeScatterPlotItem):
 
 	def __init__(self, *args, **kargs):
 		self.selection = None
+		dates = args[2]
+		args = (args[0], args[1])
 		super().__init__(*args, **kargs)
-		self.selection = DataSelection(self.data_tree.data)
+		self.selection = DataSelection(dates, self.data_tree.data)
 
 		selected_pen = self.opts.get('selectedPen')
 		if selected_pen is None:

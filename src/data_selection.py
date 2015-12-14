@@ -1,13 +1,15 @@
 import numpy
 import collections
+import time
 
 
 class DataSelection(set):
 
-	def __init__(self, dataset=None):
+	def __init__(self, dates, dataset=None):
 		super().__init__()
 		self._as_list = []
 		self._dataset = dataset
+		self.dates = dates
 		self._stats = dict()
 		self.change_listeners = []
 
@@ -41,6 +43,10 @@ class DataSelection(set):
 
 	def values(self):
 		return self._dataset[self.as_list()]
+
+
+	def get_dates(self):
+		return list(map(lambda x: time.strptime(x.decode('UTF-8'), '%Y-%m-%d %H:%M:%S'), self.dates[self.as_list()]))
 
 
 	def flip(self, item):
