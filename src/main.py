@@ -49,6 +49,10 @@ class MainWindow(QMainWindow, window_ui.Ui_MainWindow):
 		self.setupUi(self)
 
 
+	def closeEvent(self, event):
+		sys.exit(0)
+
+
 class Plot:
 	"""
 	Plottet die Daten, welche in 'data' stehen.
@@ -268,7 +272,7 @@ class Plot:
 		"""
 		Quit-Button schließt die Anwendung
 		"""
-		sys.exit()
+		sys.exit(0)
 
 
 	def onOkFilterSlider(self):
@@ -367,9 +371,14 @@ class Plot:
 			pass
 
 
+	def activateButtonHistogram(self, *args):
+		if len(self.scatterpoints.selection) > 0:
+			self.form.btnHistogram.setEnabled(True)
+
+
 	def plotFilterRange(self, small, large, dates, **kwargs):
 		self.form = MainWindow()
-		self.histogram = HistogramWidget()
+		self.histogram = HistogramWidget(self.form.btnHistogram)
 		# self.form.move(300, 300)
 		self.form.timeline.setScene(self.scene)
 		self.form.timeline.setSceneRect(0, 0, 710, 10)
@@ -401,7 +410,8 @@ class Plot:
 
 		self.form.actionFitLine.triggered.connect(self._update_regression_line)
 		self.form.actionFitCubic.triggered.connect(self.fitCubic)
-		self.scatterpoints.selection.change_listeners += (self._update_regression_line, self.fitCubic)
+		self.scatterpoints.selection.change_listeners += (self._update_regression_line, self.fitCubic,
+																											self.activateButtonHistogram, self.histogram.paintHistogram)
 
 		insecurity_line_pen = QPen(QColor.fromRgbF(1, 1, 0, 0.5))
 		self._regression_lines = (
