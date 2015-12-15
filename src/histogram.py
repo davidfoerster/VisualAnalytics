@@ -1,7 +1,6 @@
 from PyQt4.QtGui import QWidget
 import histogram_ui
 import numpy as np
-import matplotlib.mlab as mlab
 import matplotlib.pyplot as plt
 
 
@@ -66,11 +65,8 @@ class HistogramWidget(QWidget, histogram_ui.Ui_Form):
 		# axes and labels
 		ax.set_xlim(-width,len(ind)+width)
 		ax.set_ylim(0, max(self.small_hours))
-		ax.set_ylim(1, max(self.large_hours))
 		ax.set_ylabel('Small Particle')
-
 		ax.set_title('Dust Data')
-		#xTickMarks = ['Group'+str(i) for i in range(1,len(self.xs))]
 		xTickMarks = [i for i in range(0, 25)]
 		ax.set_xticks(ind+width)
 		xtickNames = ax.set_xticklabels(xTickMarks)
