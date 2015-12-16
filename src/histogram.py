@@ -35,8 +35,6 @@ class HistogramWidget(QWidget, histogram_ui.Ui_Form):
 
 		self.wid.btnPaint.clicked.connect(functools.partial(self.paintHistogram, selectedPoints, interval))
 
-
-
 		self.wid.btnCancel.clicked.connect(self.closeEvent)
 
 
@@ -128,13 +126,14 @@ class HistogramWidget(QWidget, histogram_ui.Ui_Form):
 
 	def plotHistogram(self, data, kindOfData):
 
-		print("particle: ", data)
+		#Fenstergröße des Histogramms anpassen
 		if self.tickWidth > 120:
 			fig = plt.figure(figsize=(19,5))
 		elif self.tickWidth > 30:
 			fig = plt.figure(figsize=(15,5))
 		else:
 			fig = plt.figure(figsize=(7,5))
+
 		ax = fig.add_subplot(111)
 		width = 0.35
 		ind = np.arange(len(data))
@@ -142,13 +141,11 @@ class HistogramWidget(QWidget, histogram_ui.Ui_Form):
 
 
 		if(kindOfData == "Small"):
-			ax.bar(ind, data, width, color='green')
+			ax.bar(ind, data, width, color='green') # ax.bar(Position, Datensatz, Breite der Bar, Farbe)
 		elif kindOfData == "Large":
 			ax.bar(ind, data, width, color='red')
 		else:
 			ax.bar(ind, data, width, color='orange')
-		#large = ax.bar(ind + width, self.large_hours, width,color='red')  # ax.bar(Position, Datensatz, Breite der Bar, Farbe=
-		# axes and labels
 
 		ax.set_xticks(ind + width)
 		ax.set_xlim(-width, len(ind) + width)
@@ -156,7 +153,8 @@ class HistogramWidget(QWidget, histogram_ui.Ui_Form):
 		ax.set_ylabel(kindOfData + ' particle')
 		ax.set_title('Dust Data')
 		xTickMarks = [i for i in range(1, self.tickWidth+1)]
-		print(self.tickWidth)
+
+		#Anpassen der x-Achsen Ticks bei sehr vielen Ticks
 		if ((self.tickWidth > 31) & (self.tickWidth < 121)):
 			for i in range(0, self.tickWidth):
 				if (i > 0) & ((i % 2) != 0):
@@ -165,7 +163,6 @@ class HistogramWidget(QWidget, histogram_ui.Ui_Form):
 			for i in range(0, self.tickWidth):
 				if (i > 0) & ((i % 15) != 0):
 					xTickMarks[i]=""
-		print(xTickMarks)
 
 		xtickNames = ax.set_xticklabels(xTickMarks)
 		plt.setp(xtickNames, rotation=45, fontsize=10)
