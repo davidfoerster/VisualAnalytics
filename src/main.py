@@ -121,7 +121,7 @@ class Plot:
 		childs = tuple(map(topLevelItem.child, range(topLevelItem.childCount())))
 
 		# Sliders
-		self.wid.sliderTo.setValue(365)
+		#self.wid.sliderTo.setValue(365)
 		self.wid.sliderFrom.valueChanged.connect(self.setFrom)
 		self.wid.sliderTo.valueChanged.connect(self.setTo)
 		self.widForm.show()
@@ -406,12 +406,12 @@ class Plot:
 		self.form.btnQuit.clicked.connect(self.onQuit)
 		self.form.btnDelete.clicked.connect(self.onDelete)
 		self.form.btnUndo.clicked.connect(self.undoFunction)
-		self.form.btnHistogram.clicked.connect(self.histogram.show)
+		self.form.btnHistogram.clicked.connect(functools.partial(self.histogram.onHistogram, "month", self.scatterpoints.selection))
 
 		self.form.actionFitLine.triggered.connect(self._update_regression_line)
 		self.form.actionFitCubic.triggered.connect(self.fitCubic)
-		self.scatterpoints.selection.change_listeners += (self._update_regression_line, self.fitCubic,
-																											self.activateButtonHistogram, self.histogram.paintHistogram)
+		self.form.action_Monatsverteilung.triggered.connect(functools.partial(self.histogram.onHistogram, "month", self.scatterpoints.selection))
+		self.scatterpoints.selection.change_listeners += (self._update_regression_line, self.fitCubic, self.activateButtonHistogram)#, self.histogram.paintHistogram)
 
 		insecurity_line_pen = QPen(QColor.fromRgbF(1, 1, 0, 0.5))
 		self._regression_lines = (

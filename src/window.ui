@@ -11,7 +11,7 @@
    </rect>
   </property>
   <property name="windowTitle">
-   <string>MainWindow</string>
+   <string>Plot</string>
   </property>
   <widget class="QWidget" name="centralwidget">
    <layout class="QGridLayout" name="gridLayout_2">
@@ -83,7 +83,7 @@
      <x>0</x>
      <y>0</y>
      <width>800</width>
-     <height>18</height>
+     <height>21</height>
     </rect>
    </property>
    <widget class="QMenu" name="menuAnalytics">
@@ -92,6 +92,8 @@
     </property>
     <addaction name="actionFitLine"/>
     <addaction name="actionFitCubic"/>
+    <addaction name="action_Monatsverteilung"/>
+    <addaction name="action_Jahresverteilung"/>
    </widget>
    <addaction name="menuAnalytics"/>
   </widget>
@@ -110,6 +112,16 @@
    </property>
    <property name="text">
     <string>FitCubic</string>
+   </property>
+  </action>
+  <action name="action_Monatsverteilung">
+   <property name="text">
+    <string>&amp;Monatsverteilung</string>
+   </property>
+  </action>
+  <action name="action_Jahresverteilung">
+   <property name="text">
+    <string>&amp;Jahresverteilung</string>
    </property>
   </action>
  </widget>
