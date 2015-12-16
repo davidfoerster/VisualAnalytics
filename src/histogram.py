@@ -101,8 +101,8 @@ class HistogramWidget(QWidget, histogram_ui.Ui_Form):
 					else:
 						#Index = Stunde/6 + (Tag*4)
 						#Pro Tag gibt es 4 Intervalle je 6 Stunden
-						#Beispiel: 01.01.2014 06:30 Uhr -> 06:30 / 6 = 1 und (1-1)*4 = 0 -> Index: 1+4 = 1  (Tag-1, weil Index bei 0 beginnt)
-						#Beispiel: 01.02.2014 06:30 Uhr -> 06:30 / 6 = 1 und (2-1)*4 = 4 -> Index: 1+4 = 5  (Tag-1, weil Index bei 0 beginnt)
+						#Beispiel: 01.01.2014 06:30 Uhr -> 06:30 / 6 = 1 und (1-1)*4 = 0 -> Index: 1+0 = 1  (Tag-1, weil Index bei 0 beginnt)
+						#Beispiel: 02.01.2014 06:30 Uhr -> 06:30 / 6 = 1 und (2-1)*4 = 4 -> Index: 1+4 = 5  (Tag-1, weil Index bei 0 beginnt)
 						self.listIndex = int((self.dates[i][self.timeIndex])/6)+(self.dates[i][2]-1)*4
 						#print("index3: ", self.listIndex)
 
