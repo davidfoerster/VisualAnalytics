@@ -85,7 +85,7 @@ class HistogramWidget(QWidget, histogram_ui.Ui_Form):
 
 			#Durchlaufe alle ausgewählten Punkte
 			for i in range(0, len(self.xs)):
-
+				# TODO: Tag 31 soll in das letzte Intervall mit rein?
 				#Prüfe ob der Punkt im ausgewählten Monat liegt
 				if (self.dates[i][1] == self.month+1):
 					if self.isYear:
