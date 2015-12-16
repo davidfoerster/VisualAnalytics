@@ -24,7 +24,7 @@ def _main(*args):
 	Weil die Ladedauer sehr hoch ist, wird erstmal nur der Datensatz mit allen Messdaten aus Januar verwendet. Beachtet dies bei den Filtern.
 	"""
 
-	data_path = args[0] if args else (_bindir + '/data/daten-klein.dat')
+	data_path = args[0] if args else (_bindir + '/data/February.txt')
 	data = np.genfromtxt(data_path,
 		dtype = [('date', '|S19'), ('small', 'i8'), ('large', 'i8')], delimiter = ';',
 		names = ["date", "small", "large"])
@@ -212,7 +212,7 @@ class Plot:
 				index += 1
 			else:
 				new_data = np.delete(new_data, index)
-		if new_data:
+		if len(new_data)>0:
 			self.data = new_data
 			if len(self.data) > 0:
 				self.plotFilterRange(self.data['small'], self.data['large'], self.data['date'], autoDownsample = True)
@@ -411,6 +411,7 @@ class Plot:
 		self.form.actionFitLine.triggered.connect(self._update_regression_line)
 		self.form.actionFitCubic.triggered.connect(self.fitCubic)
 		self.form.action_Monatsverteilung.triggered.connect(functools.partial(self.histogram.onHistogram, "month", self.scatterpoints.selection))
+		self.form.action_Jahresverteilung.triggered.connect(functools.partial(self.histogram.onHistogram, "year", self.scatterpoints.selection))
 		self.scatterpoints.selection.change_listeners += (self._update_regression_line, self.fitCubic, self.activateButtonHistogram)#, self.histogram.paintHistogram)
 
 		insecurity_line_pen = QPen(QColor.fromRgbF(1, 1, 0, 0.5))
