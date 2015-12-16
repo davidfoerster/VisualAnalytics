@@ -18,6 +18,9 @@ __pycache__/
 # Personal IDE project files
 .idea/workspace.xml
 .idea/tasks.xml
+.idea/cadex.iml
+.idea/misc.xml
 
 # Generic data
 *.dat
+
