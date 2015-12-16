@@ -4,7 +4,6 @@ from PyQt4.QtGui import QWidget, QMessageBox
 import histogram_ui
 import numpy as np
 import matplotlib.pyplot as plt
-import math
 
 
 class HistogramWidget(QWidget, histogram_ui.Ui_Form):
