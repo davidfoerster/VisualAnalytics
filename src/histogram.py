@@ -52,7 +52,6 @@ class HistogramWidget(QWidget, histogram_ui.Ui_Form):
 			self.wid.labHistogram.setText("Interval: 6 hours (120 intervals)")
 
 	def paintHistogram(self, *args):
-		print("------------------")
 		if (self.wid.checkBoxSmall.isChecked() | self.wid.checkBoxLarge.isChecked() | self.isYear):
 			self.month = self.wid.cbMonth.currentIndex()
 			self.interval = self.wid.sliderMonth.value()
