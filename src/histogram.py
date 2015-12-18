@@ -1,9 +1,13 @@
 import functools
 
-from PyQt4.QtGui import QWidget, QMessageBox
-import histogram_ui
+#import matplotlib.pyplot as plt
 import numpy as np
 import matplotlib.pyplot as plt
+from PyQt4.QtGui import QWidget, QMessageBox
+
+
+
+import histogram_ui
 
 
 class HistogramWidget(QWidget, histogram_ui.Ui_Form):
@@ -93,11 +97,11 @@ class HistogramWidget(QWidget, histogram_ui.Ui_Form):
 						#print("index4: ", self.listIndex)
 					elif(self.interval==2):
 						self.listIndex = int((self.dates[i][self.timeIndex])/3)
-						print("index1: ", self.listIndex)
+						#print("index1: ", self.listIndex)
 					elif(self.interval==1):
-						print(self.dates[i][self.timeIndex])
+						#print(self.dates[i][self.timeIndex])
 						self.listIndex = (self.dates[i][self.timeIndex])-1
-						print("index2: ", self.listIndex)
+						#print("index2: ", self.listIndex)
 					else:
 						#Index = Stunde/6 + (Tag*4)
 						#Pro Tag gibt es 4 Intervalle je 6 Stunden
@@ -121,10 +125,13 @@ class HistogramWidget(QWidget, histogram_ui.Ui_Form):
 
 		else:
 			msgBox = QMessageBox()
-			msgBox.setText("Choose small, large or both particle!")
+			msgBox.setText("Select small, large or both particle!")
 			msgBox.exec_()
 
 	def plotHistogram(self, data, kindOfData):
+
+
+
 
 		#Fenstergröße des Histogramms anpassen
 		if self.tickWidth > 120:
@@ -132,13 +139,15 @@ class HistogramWidget(QWidget, histogram_ui.Ui_Form):
 		elif self.tickWidth > 30:
 			fig = plt.figure(figsize=(15,5))
 		else:
-			fig = plt.figure(figsize=(7,5))
+			fig = plt.figure(figsize=(8,5))
+
+
 
 		ax = fig.add_subplot(111)
+
 		width = 0.35
 		ind = np.arange(len(data))
-
-
+		ax.plot(data[0], data[1])
 
 		if(kindOfData == "Small"):
 			ax.bar(ind, data, width, color='green') # ax.bar(Position, Datensatz, Breite der Bar, Farbe)
@@ -149,10 +158,11 @@ class HistogramWidget(QWidget, histogram_ui.Ui_Form):
 
 		ax.set_xticks(ind + width)
 		ax.set_xlim(-width, len(ind) + width)
-		ax.set_ylim(0, max(data))
+		ax.set_ylim(0, max(data)+(0.1* max(data)))
 		ax.set_ylabel(kindOfData + ' particle')
 		ax.set_title('Dust Data')
 		xTickMarks = [i for i in range(1, self.tickWidth+1)]
+
 
 		#Anpassen der x-Achsen Ticks bei sehr vielen Ticks
 		if ((self.tickWidth > 31) & (self.tickWidth < 121)):
@@ -164,7 +174,29 @@ class HistogramWidget(QWidget, histogram_ui.Ui_Form):
 				if (i > 0) & ((i % 15) != 0):
 					xTickMarks[i]=""
 
+
 		xtickNames = ax.set_xticklabels(xTickMarks)
 		plt.setp(xtickNames, rotation=45, fontsize=10)
 
+		txt = None
+
+
+		def onMove(event):
+			global txt
+			max_y = data[int(event.xdata)]
+			txt = plt.text(event.xdata, max_y, self.wid.cbMonth.currentText()+" " + str(int(event.xdata)+1) +":\ny: " +str(max_y),
+								horizontalalignment='center',verticalalignment='center')
+			fig.canvas.draw()
+			txt.remove()
+
+
+		fig.canvas.mpl_connect('motion_notify_event', onMove)
+
+
 		plt.show()
+
+		#self.tooltip = wx.lib.agw.supertooltip("A nice tooltip message")   #RichToolTip(tip='tip with a long %s line and a newline\n' % (' '*100))
+		#gcfm().canvas.SetToolTip(self.tooltip)
+		#self.tooltip.Enable(False)
+		#self.tooltip.SetDelay(0)
+		#self.figure.canvas.mpl_connect('motion_notify_event', self._onMotion)
