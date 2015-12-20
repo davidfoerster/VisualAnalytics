@@ -116,16 +116,31 @@
    <property name="checkable">
     <bool>true</bool>
    </property>
+   <property name="enabled">
+    <bool>false</bool>
+   </property>
    <property name="text">
     <string>FitCubic</string>
    </property>
   </action>
   <action name="action_Monatsverteilung">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="enabled">
+    <bool>true</bool>
+   </property>
    <property name="text">
     <string>&amp;Monatsverteilung</string>
    </property>
   </action>
   <action name="action_Jahresverteilung">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="enabled">
+    <bool>true</bool>
+   </property>
    <property name="text">
     <string>&amp;Jahresverteilung</string>
    </property>

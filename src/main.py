@@ -74,8 +74,10 @@ class Plot:
 
 		self.original_data = data
 		self.new_data = data
-		self.undo_data1 = self.new_data
-		self.undo_data2 = self.undo_data1
+		global interval
+		interval = "day"
+		print("interval1: ", interval)
+
 
 		if data is not None:
 			self.plotFilterRange(data['small'], data['large'], data['date'], autoDownsample = True)
@@ -371,6 +373,22 @@ class Plot:
 			self.form.btnHistogram.setEnabled(True)
 			self.form.btnDelete.setEnabled(True)
 
+	def setHistogramInterval(self, interval):
+		if(interval == "month"):
+			self.form.action_Jahresverteilung.setChecked(False)
+		else:
+			self.form.action_Monatsverteilung.setChecked(False)
+
+	def onHistogram(self):
+		if self.form.action_Monatsverteilung.isChecked():
+			interval = "month"
+		elif self.form.action_Jahresverteilung.isChecked():
+			interval = "year"
+		else:
+			interval = "day"
+		self.histogram.onHistogram(interval, self.scatterpoints.selection)
+
+
 
 	def plotFilterRange(self, small, large, dates, **kwargs):
 		self.form = MainWindow()
@@ -402,19 +420,21 @@ class Plot:
 		self.form.btnQuit.clicked.connect(self.onQuit)
 		self.form.btnDelete.clicked.connect(self.onDelete)
 		self.form.btnUndo.clicked.connect(self.undoFunction)
-		self.form.btnHistogram.clicked.connect(functools.partial(self.histogram.onHistogram, "month", self.scatterpoints.selection))
 
+
+		#self.form.btnHistogram.clicked.connect(functools.partial(self.histogram.onHistogram ,interval, self.scatterpoints.selection))
+		self.form.btnHistogram.clicked.connect(self.onHistogram)
 		self.form.actionFitLine.triggered.connect(self._update_regression_line)
 		self.form.actionFitCubic.triggered.connect(self.fitCubic)
-		self.form.action_Monatsverteilung.triggered.connect(functools.partial(self.histogram.onHistogram, "month", self.scatterpoints.selection))
-		self.form.action_Jahresverteilung.triggered.connect(functools.partial(self.histogram.onHistogram, "year", self.scatterpoints.selection))
+		self.form.action_Monatsverteilung.triggered.connect(functools.partial(self.setHistogramInterval, "month"))
+		self.form.action_Jahresverteilung.triggered.connect(functools.partial(self.setHistogramInterval, "year"))
 		self.scatterpoints.selection.change_listeners += (self._update_regression_line, self.fitCubic, self.activateButtonHistogram)#, self.histogram.paintHistogram)
 
+		#Aktivieren des Undo-Buttons
 		if self.stack.isEmpty():
 			self.form.btnUndo.setEnabled(False)
 		else:
 			self.form.btnUndo.setEnabled(True)
-
 
 		insecurity_line_pen = QPen(QColor.fromRgbF(1, 1, 0, 0.5))
 		self._regression_lines = (

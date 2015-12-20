@@ -26,16 +26,30 @@ class HistogramWidget(QWidget, histogram_ui.Ui_Form):
 		self.wid = histogram_ui.Ui_Form()
 		self.wid.setupUi(self.widForm)
 		self.isYear = True
+		self.isMonth = True
+		self.isDay = False
+
 
 		if interval == "month":
+			self.wid.sliderDay.setVisible(False)
 			self.wid.labHistogram.setText("Interval: 6 hours (120 intervals)")
 			self.isYear = False
-		else:
+		elif interval == "year":
 			self.wid.sliderMonth.setEnabled(False)
-			self.wid.cbMonth.setEnabled(False)
+			self.wid.cbMonth.setVisible(False)
 			self.wid.labHistogram.setText("Interval: 6 hours (1460 intervals)")
+			self.isMonth = False
+		else:
+			self.wid.sliderMonth.setVisible(False)
+			self.wid.sliderDay.setEnabled(True)
+			self.wid.sliderDay.setVisible(True)
+			self.wid.labHistogram.setText("Interval: 1 hours (24 intervals)")
+			self.isYear = False
+			self.isMonth = False
+			self.isDay = True
 
 		self.wid.sliderMonth.valueChanged.connect(self.setMonthValue)
+		self.wid.sliderDay.valueChanged.connect(self.setDayValue)
 		self.widForm.show()
 		self.wid.btnPaint.clicked.connect(functools.partial(self.computeHistogram, selectedPoints, interval))
 		self.wid.btnCancel.clicked.connect(self.closeEvent)
@@ -49,10 +63,20 @@ class HistogramWidget(QWidget, histogram_ui.Ui_Form):
 		else:
 			self.wid.labHistogram.setText("Interval: 6 hours (120 intervals)")
 
+	def setDayValue(self):
+		self.value = self.wid.sliderDay.value()
+		if (self.value == 2):
+			self.wid.labHistogram.setText("Interval: 6 hours (4 intervals)")
+		elif (self.value == 1):
+			self.wid.labHistogram.setText("Interval: 3 hours (8 intervals)")
+		else:
+			self.wid.labHistogram.setText("Interval: 1 hours (24 intervals)")
+
 	def computeHistogram(self, *args):
 		if (self.wid.checkBoxSmall.isChecked() | self.wid.checkBoxLarge.isChecked() | self.isYear):
 			self.month = self.wid.cbMonth.currentIndex()
-			self.interval = self.wid.sliderMonth.value()
+			self.interval_m = self.wid.sliderMonth.value()
+			self.interval_d = self.wid.sliderDay.value()
 			self.xs, self.ys = args[0].values().transpose()  # xs:small, ys:large
 			self.dates = args[0].get_dates()
 			if self.isVisible():
@@ -61,15 +85,26 @@ class HistogramWidget(QWidget, histogram_ui.Ui_Form):
 			if self.isYear:
 				self.tickWidth = 1460
 				self.timeIndex = 3
-			elif self.interval==2:
-				self.tickWidth = 10
-				self.timeIndex = 2
-			elif self.interval==1:
-				self.tickWidth = 30
-				self.timeIndex = 2
+			elif self.isMonth:
+				if self.interval_m == 2:
+					self.tickWidth = 10
+					self.timeIndex = 2
+				elif self.interval_m == 1:
+					self.tickWidth = 30
+					self.timeIndex = 2
+				else:
+					self.tickWidth = 120
+					self.timeIndex = 3
 			else:
-				self.tickWidth = 120
-				self.timeIndex = 3
+				if self.interval_d == 2:
+					self.tickWidth = 4
+					self.timeIndex = 3
+				elif self.interval_d == 1:
+					self.tickWidth = 8
+					self.timeIndex = 3
+				else:
+					self.tickWidth = 24
+					self.timeIndex = 3
 
 
 			self.sum_small_particle = [[0 for i in range(0, self.tickWidth)],[() for i in range(0, self.tickWidth)]]   # Liste mit Anzahl-tickWidth 0-Werten, für jeden Intervall ein Eintrag
@@ -84,27 +119,32 @@ class HistogramWidget(QWidget, histogram_ui.Ui_Form):
 			for i in range(0, len(self.xs)):
 				# TODO: Tag 31 soll in das letzte Intervall mit rein?
 				#Prüfe ob der Punkt im ausgewählten Monat liegt
-				print(self.wid.cbMonth.currentText())
-				print("Month:", self.dates[i][1],self.month+1)
 				if((self.dates[i][1] == self.month+1) | self.isYear):
-					print("hier")
 					if self.isYear:
 						self.listIndex = int((self.dates[i][self.timeIndex])/6)+(self.dates[i][2]-1)*4
 						#print("index4: ", self.listIndex)
-					elif(self.interval==2):
-						self.listIndex = int((self.dates[i][self.timeIndex])/3)
-						#print("index1: ", self.listIndex)
-					elif(self.interval==1):
-						#print(self.dates[i][self.timeIndex])
-						self.listIndex = (self.dates[i][self.timeIndex])-1
-						#print("index2: ", self.listIndex)
+					elif self.isMonth:
+						if(self.interval_m == 2):
+							self.listIndex = int((self.dates[i][self.timeIndex])/3)
+							#print("index1: ", self.listIndex)
+						elif(self.interval_m == 1):
+							#print(self.dates[i][self.timeIndex])
+							self.listIndex = (self.dates[i][self.timeIndex])-1
+							#print("index2: ", self.listIndex)
+						else:
+							#Index = Stunde/6 + (Tag*4)
+							#Pro Tag gibt es 4 Intervalle je 6 Stunden
+							#Beispiel: 01.01.2014 06:30 Uhr -> 06:30 / 6 = 1 und (1-1)*4 = 0 -> Index: 1+0 = 1  (Tag-1, weil Index bei 0 beginnt)
+							#Beispiel: 02.01.2014 06:30 Uhr -> 06:30 / 6 = 1 und (2-1)*4 = 4 -> Index: 1+4 = 5  (Tag-1, weil Index bei 0 beginnt)
+							self.listIndex = int((self.dates[i][self.timeIndex])/6)+(self.dates[i][2]-1)*4
+							#print("index3: ", self.listIndex)
 					else:
-						#Index = Stunde/6 + (Tag*4)
-						#Pro Tag gibt es 4 Intervalle je 6 Stunden
-						#Beispiel: 01.01.2014 06:30 Uhr -> 06:30 / 6 = 1 und (1-1)*4 = 0 -> Index: 1+0 = 1  (Tag-1, weil Index bei 0 beginnt)
-						#Beispiel: 02.01.2014 06:30 Uhr -> 06:30 / 6 = 1 und (2-1)*4 = 4 -> Index: 1+4 = 5  (Tag-1, weil Index bei 0 beginnt)
-						self.listIndex = int((self.dates[i][self.timeIndex])/6)+(self.dates[i][2]-1)*4
-						#print("index3: ", self.listIndex)
+						if self.interval_d == 2:
+							self.listIndex = int((self.dates[i][self.timeIndex])/6)
+						elif self.interval_d == 1:
+							self.listIndex = int((self.dates[i][self.timeIndex])/3)
+						else:
+							self.listIndex = self.dates[i][self.timeIndex]
 					print("index: ", self.listIndex)
 
 					self.sum_small_particle[0][self.listIndex] = self.sum_small_particle[0][self.listIndex] + self.xs[i]
@@ -138,7 +178,7 @@ class HistogramWidget(QWidget, histogram_ui.Ui_Form):
 			msgBox.exec_()
 
 	def plotHistogram(self, data, kindOfData):
-		print("max :",max(data[0]))
+		#print("max :",max(data[0]))
 		if(max(data[0]) > 0):
 			#Fenstergröße des Histogramms anpassen
 			if self.tickWidth > 120:
@@ -159,12 +199,21 @@ class HistogramWidget(QWidget, histogram_ui.Ui_Form):
 			else:
 				ax.bar(ind, data[0], width, color='orange')
 
-			ax.set_xticks(ind + width)
+			ax.set_xticks(ind + width/2)
 			ax.set_xlim(-width, len(ind) + width)
 			ax.set_ylim(0, max(data[0])+(0.1* max(data[0])))
 			ax.set_ylabel(kindOfData + ' particle')
 			ax.set_title('Dust Data')
-			xTickMarks = [i for i in range(1, self.tickWidth+1)]
+
+			if self.isDay:
+				if self.wid.sliderDay.value() == 2:
+					xTickMarks = ["0-5", "6-11", "12-17", "18-23"]
+				elif self.wid.sliderDay.value() == 1:
+					xTickMarks = ["0-2", "3-5", "6-8", "9-11", "12-14", "15-17", "18-20", "21-23"]
+				else:
+					xTickMarks = [i for i in range(0, self.tickWidth)]
+			else:
+				xTickMarks = [i for i in range(1, self.tickWidth+1)]
 
 			#Anpassen der x-Achsen Ticks bei sehr vielen Ticks
 			if ((self.tickWidth > 31) & (self.tickWidth < 121)):
