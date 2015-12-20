@@ -25,7 +25,7 @@ def _main(*args):
 	Weil die Ladedauer sehr hoch ist, wird erstmal nur der Datensatz mit allen Messdaten aus Januar verwendet. Beachtet dies bei den Filtern.
 	"""
 
-	data_path = args[0] if args else (_bindir + '/data/daten-klein.dat')
+	data_path = args[0] if args else (_bindir + '/data/February.txt')
 	data = np.genfromtxt(data_path,
 		dtype = [('date', '|S19'), ('small', 'i8'), ('large', 'i8')], delimiter = ';',
 		names = ["date", "small", "large"])
@@ -74,10 +74,6 @@ class Plot:
 
 		self.original_data = data
 		self.new_data = data
-		global interval
-		interval = "day"
-		print("interval1: ", interval)
-
 
 		if data is not None:
 			self.plotFilterRange(data['small'], data['large'], data['date'], autoDownsample = True)

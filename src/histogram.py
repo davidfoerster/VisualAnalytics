@@ -35,12 +35,14 @@ class HistogramWidget(QWidget, histogram_ui.Ui_Form):
 			self.wid.labHistogram.setText("Interval: 6 hours (120 intervals)")
 			self.isYear = False
 		elif interval == "year":
-			self.wid.sliderMonth.setEnabled(False)
+			self.wid.sliderMonth.setVisible(False)
+			self.wid.sliderDay.setVisible(False)
 			self.wid.cbMonth.setVisible(False)
 			self.wid.labHistogram.setText("Interval: 6 hours (1460 intervals)")
 			self.isMonth = False
 		else:
 			self.wid.sliderMonth.setVisible(False)
+			self.wid.cbMonth.setVisible(False)
 			self.wid.sliderDay.setEnabled(True)
 			self.wid.sliderDay.setVisible(True)
 			self.wid.labHistogram.setText("Interval: 1 hours (24 intervals)")
@@ -119,7 +121,7 @@ class HistogramWidget(QWidget, histogram_ui.Ui_Form):
 			for i in range(0, len(self.xs)):
 				# TODO: Tag 31 soll in das letzte Intervall mit rein?
 				#Prüfe ob der Punkt im ausgewählten Monat liegt
-				if((self.dates[i][1] == self.month+1) | self.isYear):
+				if((self.dates[i][1] == self.month+1) | self.isYear | self.isDay):
 					if self.isYear:
 						self.listIndex = int((self.dates[i][self.timeIndex])/6)+(self.dates[i][2]-1)*4
 						#print("index4: ", self.listIndex)
@@ -145,7 +147,7 @@ class HistogramWidget(QWidget, histogram_ui.Ui_Form):
 							self.listIndex = int((self.dates[i][self.timeIndex])/3)
 						else:
 							self.listIndex = self.dates[i][self.timeIndex]
-					print("index: ", self.listIndex)
+					#print("index: ", self.listIndex)
 
 					self.sum_small_particle[0][self.listIndex] = self.sum_small_particle[0][self.listIndex] + self.xs[i]
 					self.small_points[self.listIndex].append(self.xs[i])
