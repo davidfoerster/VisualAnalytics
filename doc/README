@@ -14,6 +14,8 @@ Voraussetzungen
       http://www.pyqtgraph.org/downloads/
 	- Matplotlib (>= 1.5.0)
 	  http://matplotlib.org/users/installing.html
+	 - pythonds (>= 1.0.1)
+	 https://pypi.python.org/pypi/pythonds
   
   In Ubuntu Trusty (14.04) sind folgende Pakete aus den Paketverzeichnissen
   erforderlich:
