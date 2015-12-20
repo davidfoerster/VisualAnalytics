@@ -432,7 +432,6 @@ class Plot:
 		"""
 		Wandelt die Byte-Daten in Strings um
 		"""
-
 		sliderDate = day['sliderDate']
 		chooseDateByte = sliderDate[chooseDay]
 		chooseDate = chooseDateByte.decode("utf-8")

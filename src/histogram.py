@@ -34,13 +34,11 @@ class HistogramWidget(QWidget, histogram_ui.Ui_Form):
 			self.wid.sliderMonth.setEnabled(False)
 			self.wid.cbMonth.setEnabled(False)
 			self.wid.labHistogram.setText("Interval: 6 hours (1460 intervals)")
+
 		self.wid.sliderMonth.valueChanged.connect(self.setMonthValue)
 		self.widForm.show()
-
-		self.wid.btnPaint.clicked.connect(functools.partial(self.paintHistogram, selectedPoints, interval))
-
+		self.wid.btnPaint.clicked.connect(functools.partial(self.computeHistogram, selectedPoints, interval))
 		self.wid.btnCancel.clicked.connect(self.closeEvent)
-
 
 	def setMonthValue(self):
 		self.value = self.wid.sliderMonth.value()
@@ -51,7 +49,7 @@ class HistogramWidget(QWidget, histogram_ui.Ui_Form):
 		else:
 			self.wid.labHistogram.setText("Interval: 6 hours (120 intervals)")
 
-	def paintHistogram(self, *args):
+	def computeHistogram(self, *args):
 		if (self.wid.checkBoxSmall.isChecked() | self.wid.checkBoxLarge.isChecked() | self.isYear):
 			self.month = self.wid.cbMonth.currentIndex()
 			self.interval = self.wid.sliderMonth.value()
@@ -127,8 +125,6 @@ class HistogramWidget(QWidget, histogram_ui.Ui_Form):
 					self.sum_large_particle[1][l] = statisticValues_large
 					self.sum_particle[1][l] = statisticValues_particle
 
-
-
 			if(self.wid.checkBoxSmall.isChecked() & self.wid.checkBoxLarge.isChecked()):
 				self.plotHistogram(self.sum_particle, "All")
 			elif self.wid.checkBoxSmall.isChecked():
@@ -170,7 +166,6 @@ class HistogramWidget(QWidget, histogram_ui.Ui_Form):
 			ax.set_title('Dust Data')
 			xTickMarks = [i for i in range(1, self.tickWidth+1)]
 
-
 			#Anpassen der x-Achsen Ticks bei sehr vielen Ticks
 			if ((self.tickWidth > 31) & (self.tickWidth < 121)):
 				for i in range(0, self.tickWidth):
@@ -180,7 +175,6 @@ class HistogramWidget(QWidget, histogram_ui.Ui_Form):
 				for i in range(0, self.tickWidth):
 					if (i > 0) & ((i % 15) != 0):
 						xTickMarks[i]=""
-
 
 			xtickNames = ax.set_xticklabels(xTickMarks)
 			plt.setp(xtickNames, rotation=45, fontsize=10)
@@ -195,12 +189,10 @@ class HistogramWidget(QWidget, histogram_ui.Ui_Form):
 				fig.canvas.draw()
 				txt.remove()
 
-
 			fig.canvas.mpl_connect('motion_notify_event', onMove)
-
-
 			plt.show()
+
 		else:
 			msgBox = QMessageBox()
-			msgBox.setText("No selected data for "+self.wid.cbMonth.currentText()+"!")
+			msgBox.setText("No data selected for "+self.wid.cbMonth.currentText()+"!")
 			msgBox.exec_()
