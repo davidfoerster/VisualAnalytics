@@ -187,14 +187,17 @@ class HistogramWidget(QWidget, histogram_ui.Ui_Form):
 
 			txt = None
 			def onMove(event):
+				if event.xdata is None:
+					return
 				global txt
 				max_y = data[0][int(event.xdata)]
 				statistic_values =  data[1][int(event.xdata)]
-				tt = 'Mean={:.3}\nMedian={:.3}\nStd. Deviation={:.3}'.format(*statistic_values)
-				txt = plt.text(event.xdata, max_y, tt,	horizontalalignment='center',verticalalignment='center')
-				fig.canvas.draw()
-				txt.remove()
-
+				if statistic_values:
+					tt = 'Mean={:.3}\nMedian={:.3}\nStd. Deviation={:.3}'.format(*statistic_values)
+					props = dict(boxstyle='round', facecolor='wheat')
+					txt = plt.text(event.xdata, max_y, tt,	horizontalalignment='center',verticalalignment='center', bbox=props)
+					fig.canvas.draw()
+					txt.remove()
 
 			fig.canvas.mpl_connect('motion_notify_event', onMove)
 
