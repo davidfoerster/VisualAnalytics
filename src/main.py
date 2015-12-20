@@ -14,6 +14,7 @@ import widgetwin_ui
 from histogram import HistogramWidget
 from tree_scatter_plot import SelectableScatterPlotItem
 import math_utils
+from pythonds.basic.stack import Stack
 
 
 def _main(*args):
@@ -36,7 +37,6 @@ def _main(*args):
 
 _bindir = os.path.dirname(os.path.dirname(os.path.realpath(__file__)))
 
-# TODO: was ist mit Schaltjahren?
 # Liste mit Tagen und dazu gehörenden Datum zB Tag 365 ist der 2014-12-31
 day = np.genfromtxt(_bindir + '/data/DateInDays.txt',
 	dtype = [('day', '|i8'), ('date', 'S10')], delimiter = ',',
@@ -69,6 +69,8 @@ class Plot:
 		self.tooltip = None
 		self.scene = QGraphicsScene()
 		self.pen = QPen(QColor(0, 0, 255))
+
+		self.stack = Stack()
 
 		self.original_data = data
 		self.new_data = data
@@ -202,18 +204,18 @@ class Plot:
 
 	def filterMonth(self, timeInterval):
 		# TODO: Use numpy.ndarray's range filter view instead of deleting tuples piece by piece
-		self.undo_data2 = self.undo_data1
-		self.undo_data1 = self.new_data
-		new_data = self.original_data
+		self.stack.push(self.new_data)
+		self.new_data = self.original_data
 		index = 0
-		for s in new_data:
+		for s in self.new_data:
 			decode_date = s[0].decode("utf-8")
 			if timeInterval in decode_date:
 				index += 1
 			else:
-				new_data = np.delete(new_data, index)
-		if len(new_data)>0:
-			self.data = new_data
+				self.new_data = np.delete(self.new_data, index)
+		if len(self.new_data)>0:
+			self.data = self.new_data
+
 			if len(self.data) > 0:
 				self.plotFilterRange(self.data['small'], self.data['large'], self.data['date'], autoDownsample = True)
 		else:
@@ -235,8 +237,7 @@ class Plot:
 
 	def onDelete(self):
 		if len(self.scatterpoints.selection) > 0:
-			self.undo_data2 = self.undo_data1
-			self.undo_data1 = self.new_data  # undo_data1 speichert die Datenmenge vor dem Bearbeiten
+			self.stack.push(self.new_data)
 			index = 0
 			index_diff = 0
 			for s in self.new_data:
@@ -249,14 +250,11 @@ class Plot:
 						self.scatterpoints.selection.remove(p)
 				index = index + 1
 			self.data = self.new_data  # somit kann weiterhin mit data['small'] und data['large'] gearbeitet werden.
-
 			self.plotFilterRange(self.data['small'], self.data['large'], self.data['date'], autoDownsample = True)
 
 
 	def undoFunction(self):
-		self.new_data = self.undo_data1
-		self.undo_data1 = self.undo_data2
-		self.data = self.new_data
+		self.data = self.stack.pop()
 		self.plotFilterRange(self.data['small'], self.data['large'], self.data['date'], autoDownsample = True)
 
 
@@ -264,7 +262,6 @@ class Plot:
 		"""
 		Jeder Cancel-Button blendet das Filter-Fenster aus
 		"""
-
 		self.widForm.close()
 
 
@@ -282,7 +279,7 @@ class Plot:
 			 danach suche alle Messdaten im Zeitraum
 		2. plotFilterRange(self, small, large): Plotten der Daten. Small/Large = Liste allen kleinen/großen Partikel
 		"""
-
+		self.stack.push(self.new_data)
 		fromValue = int(self.wid.sliderFrom.value())
 		toValue = int(self.wid.sliderTo.value())
 		if fromValue > toValue:
@@ -297,8 +294,6 @@ class Plot:
 		self.wid.labTo.setText(toDate)
 
 		isDeletePoint = True  # Alle Punkte die nicht im Filterzeitraum liegen, werden aus der Datenmenge gelöscht
-		self.undo_data2 = self.undo_data1
-		self.undo_data1 = self.new_data
 		self.new_data = self.original_data
 		index = 0
 		for s in self.new_data:
@@ -374,6 +369,7 @@ class Plot:
 	def activateButtonHistogram(self, *args):
 		if len(self.scatterpoints.selection) > 0:
 			self.form.btnHistogram.setEnabled(True)
+			self.form.btnDelete.setEnabled(True)
 
 
 	def plotFilterRange(self, small, large, dates, **kwargs):
@@ -414,6 +410,12 @@ class Plot:
 		self.form.action_Jahresverteilung.triggered.connect(functools.partial(self.histogram.onHistogram, "year", self.scatterpoints.selection))
 		self.scatterpoints.selection.change_listeners += (self._update_regression_line, self.fitCubic, self.activateButtonHistogram)#, self.histogram.paintHistogram)
 
+		if self.stack.isEmpty():
+			self.form.btnUndo.setEnabled(False)
+		else:
+			self.form.btnUndo.setEnabled(True)
+
+
 		insecurity_line_pen = QPen(QColor.fromRgbF(1, 1, 0, 0.5))
 		self._regression_lines = (
 			pg.InfiniteLine(),
@@ -430,7 +432,6 @@ class Plot:
 		"""
 		Wandelt die Byte-Daten in Strings um
 		"""
-
 		sliderDate = day['sliderDate']
 		chooseDateByte = sliderDate[chooseDay]
 		chooseDate = chooseDateByte.decode("utf-8")
@@ -451,7 +452,6 @@ class Plot:
 		"""
 		Setzen des To-Sliders bei Änderung
 		"""
-
 		chooseDay = self.wid.sliderTo.value()
 		chooseDate = self.getDateFromDay(chooseDay)
 		self.wid.labTo.setText(chooseDate)

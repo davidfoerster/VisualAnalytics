@@ -43,6 +43,9 @@
     </item>
     <item row="4" column="1">
      <widget class="QPushButton" name="btnUndo">
+      <property name="enabled">
+       <bool>false</bool>
+      </property>
       <property name="text">
        <string>Undo</string>
       </property>
@@ -50,6 +53,9 @@
     </item>
     <item row="4" column="3">
      <widget class="QPushButton" name="btnDelete">
+      <property name="enabled">
+       <bool>false</bool>
+      </property>
       <property name="text">
        <string>Delete</string>
       </property>
