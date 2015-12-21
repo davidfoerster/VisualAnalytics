@@ -1,11 +1,8 @@
 import functools
 
-#import matplotlib.pyplot as plt
 import numpy as np
 import matplotlib.pyplot as plt
 from PyQt4.QtGui import QWidget, QMessageBox
-
-
 
 import histogram_ui
 
