@@ -1,7 +1,7 @@
 PYUIC = python3 -m PyQt4.uic.pyuic
 
 
-DEPS = widgetwin_ui.py window_ui.py
+DEPS = widgetwin_ui.py window_ui.py histogram_ui.py
 
 all: $(DEPS)
 
