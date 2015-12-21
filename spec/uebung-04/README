@@ -1,0 +1,9 @@
+matplotlib - Erstellen des Histogramm als Figure
+        - Auswahl in Tages-, Monats- und Jahresgang
+		- Intervallanpassungen via slider
+		- Selektion in "small" und/oder "large" Partikel
+		- Tooltip bei mouse hover einer Bar im Histogramm
+
+
+Eigenleistungen:
+ - im Wesentlichen die oben genannten Funktionen
