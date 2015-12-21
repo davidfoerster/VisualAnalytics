@@ -10,6 +10,7 @@
 *.pdf
 *.ps
 *.dvi
+*.synctex.gz
 
 # Generated source and binary code
 __pycache__/
