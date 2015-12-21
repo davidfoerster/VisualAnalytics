@@ -21,12 +21,17 @@ Voraussetzungen
   erforderlich:
   
     python3 python3-numpy python3-pyqt4 python3-pyqt4.opengl make pyqt4-dev-tools
+    python3-matplotlib python3-tk python3-pip
   
   Außerdem werden folgende Pakete aus anderen Quellen benötigt, da sie in Ubuntu 
   Trusty fehlen oder zu alt sind:
   
    - "python3-scipy" aus Ubuntu Wily (https://launchpad.net/ubuntu/wily/+source/python-scipy)
    - "python3-pyqtgraph" aus Ubuntu Wily (https://launchpad.net/ubuntu/wily/+source/python-pyqtgraph)
+
+  Erforderliche Pip-Pakete:
+
+    pythonds
 
 
 Benutzung
