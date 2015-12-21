@@ -100,6 +100,7 @@
     <addaction name="actionFitCubic"/>
     <addaction name="action_Monatsverteilung"/>
     <addaction name="action_Jahresverteilung"/>
+    <addaction name="action_Tagesverteilung"/>
    </widget>
    <addaction name="menuAnalytics"/>
   </widget>
@@ -143,6 +144,14 @@
    </property>
    <property name="text">
     <string>&amp;Jahresverteilung</string>
+   </property>
+  </action>
+  <action name="action_Tagesverteilung">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>&amp;Tagesverteilung</string>
    </property>
   </action>
  </widget>

@@ -1,6 +1,22 @@
  - Workaround zur Aktivierung des Histogramms im Tagesgang:
 
-    1. Den Menüpunkt "Analytics → Monatsverteilung" auswählen und wieder abwählen.
-    2. Unter dem Streudiagramm den Button "Histogramm" anklicken.
+    1. Outlier im Plot markieren.
+    2. Unter dem Streudiagramm den Button "Histogram" anklicken.
     3. Histogrammparameter im Dialog auswählen.
+    4. Button "Paint" anklicken, um das Histogramm zu zeichnen.
+
+
+ - Workaround zur Aktivierung des Histogramms im Monatsgang:
+
+    1. Den Menüpunkt "Analytics → Monatsverteilung" auswählen.
+    2. Outlier im Plot markieren.
+    3. Unter dem Streudiagramm den Button "Histogram" anklicken.
+    4. Histogrammparameter im Dialog auswählen.
+    5. Button "Paint" anklicken, um das Histogramm zu zeichnen.
+
+ - Workaround zur Aktivierung des Histogramms im Jahresgang:
+
+    1. Den Menüpunkt "Analytics → Jahresverteilung" auswählen.
+    2. Outlier im Plot markieren.
+    3. Unter dem Streudiagramm den Button "Histogram" anklicken.
     4. Button "Paint" anklicken, um das Histogramm zu zeichnen.

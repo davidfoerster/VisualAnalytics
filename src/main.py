@@ -43,6 +43,7 @@ day = np.genfromtxt(_bindir + '/data/DateInDays.txt',
 	names = ["sliderDay", "sliderDate"])
 
 
+
 class MainWindow(QMainWindow, window_ui.Ui_MainWindow):
 	def __init__(self, parent = None):
 		super(MainWindow, self).__init__(parent)
@@ -370,21 +371,27 @@ class Plot:
 			self.form.btnDelete.setEnabled(True)
 
 	def setHistogramInterval(self, interval):
-		if(interval == "month"):
+		isChecked = False
+		if bool(self.form.action_Monatsverteilung.isChecked) & (interval == "month"):
+			isChecked = True
 			self.form.action_Jahresverteilung.setChecked(False)
-		else:
+			self.form.action_Tagesverteilung.setChecked(False)
+		elif bool(self.form.action_Tagesverteilung.isChecked) & (interval == "year"):
+			isChecked = True
 			self.form.action_Monatsverteilung.setChecked(False)
-
-	def onHistogram(self):
-		if self.form.action_Monatsverteilung.isChecked():
-			interval = "month"
-		elif self.form.action_Jahresverteilung.isChecked():
-			interval = "year"
+			self.form.action_Tagesverteilung.setChecked(False)
+		elif bool(self.form.action_Tagesverteilung.isChecked) & (interval == "day"):
+			isChecked = True
+			self.form.action_Jahresverteilung.setChecked(False)
+			self.form.action_Monatsverteilung.setChecked(False)
+		if isChecked:
+			self.HistoInterval = interval
+			self.activateButtonHistogram(self.scatterpoints.selection)
 		else:
-			interval = "day"
-		self.histogram.onHistogram(interval, self.scatterpoints.selection)
+			self.form.btnHistogram.setEnabled(False)
 
-
+	def onHistogram(self,):
+		self.histogram.onHistogram(self.HistoInterval, self.scatterpoints.selection)
 
 	def plotFilterRange(self, small, large, dates, **kwargs):
 		self.form = MainWindow()
@@ -424,7 +431,8 @@ class Plot:
 		self.form.actionFitCubic.triggered.connect(self.fitCubic)
 		self.form.action_Monatsverteilung.triggered.connect(functools.partial(self.setHistogramInterval, "month"))
 		self.form.action_Jahresverteilung.triggered.connect(functools.partial(self.setHistogramInterval, "year"))
-		self.scatterpoints.selection.change_listeners += (self._update_regression_line, self.fitCubic, self.activateButtonHistogram)#, self.histogram.paintHistogram)
+		self.form.action_Tagesverteilung.triggered.connect(functools.partial(self.setHistogramInterval, "day"))
+		self.scatterpoints.selection.change_listeners += (self._update_regression_line, self.fitCubic) #self.activateButtonHistogram)#, self.histogram.paintHistogram)
 
 		#Aktivieren des Undo-Buttons
 		if self.stack.isEmpty():
