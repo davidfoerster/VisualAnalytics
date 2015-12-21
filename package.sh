@@ -7,7 +7,7 @@ case "$0" in
 esac
 
 find \
-  src data/* doc run.sh "screenshot/$series" "spec/$series" \
+  src data/* doc prototype "screenshot/$series" "spec/$series" \
   \( -name __\* -prune -false \) -o \( -type f ! -name TODO\* -print0 \) |
 xargs -r -0 -- git ls-files -z -- |
 tar -vchaf "$series_file" --null -T -
