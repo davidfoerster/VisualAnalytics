@@ -1,0 +1,179 @@
+\documentclass{beamer}
+
+\usepackage{amsmath}
+\usepackage{amssymb}
+%\usepackage{textcomp}
+\usepackage[ngerman]{babel}
+\usepackage{graphicx}
+\usepackage{color}
+\usepackage{listings}
+\usepackage{lmodern}
+\usepackage[T1]{fontenc}
+\usepackage[utf8x]{inputenc}
+
+\graphicspath{{./imgs/}}
+
+% customized theme
+\usetheme{CambridgeUS}
+\usecolortheme{whale}
+\beamertemplatenavigationsymbolsempty
+\setbeamertemplate{footline}[page number]
+\setbeamercolor{frametitle}{fg=white,bg=structure}
+\setbeamercolor{theorem}{fg=black,bg=structure!30}
+\setbeamercovered{transparent}
+
+\definecolor{mygreen}{rgb}{0, 0.6, 0}
+\definecolor{mymauve}{rgb}{0.58, 0, 0.82}
+
+\lstset{
+	language=Python,
+	breaklines=true,
+	tabsize=4,
+	%basicstyle=\ttfamily,
+	keywordstyle=\color{blue},
+	stringstyle=\color{mymauve},
+	commentstyle=\color{mygreen},
+	otherkeywords={
+		None,False,True,
+		self,
+		bytes}
+}
+
+% meta informations for title page
+\title{Übung 4}
+\subtitle{Visual Analytics für raumzeitliche Daten}
+\author{Christian Diehr \and Benjamin Drost \and David Foerster}
+\institute{Institut für Informatik\\Humboldt-Universität zu Berlin}
+\logo{\includegraphics[width=2cm,height=2cm]{../hulogo}}
+\date{22. Dezember 2015}
+
+\begin{document}
+
+    \begin{frame}
+        \titlepage
+    \end{frame}
+    \logo % logo only appears on title page
+    
+    \section{}
+    \begin{frame}
+	    \frametitle{Gliederung}
+			\begin{itemize}
+			\item Main-Window / Plot-Window
+				\begin{itemize}
+				\item Plot \& Tooltip
+				\item Markieren \& Löschfunktion
+				\item Undo-Funktion
+				\item FitLine \& Regressionsgeraden
+				\end{itemize}
+			\item Filter-Window
+				\begin{itemize}
+				\item Filtern nach Tag
+				\item Filtern im Intervall
+				\end{itemize}
+			\item Histogramm
+				\begin{itemize}
+				\item Tages-, Monats- und Jahresgang
+				\end{itemize}
+			\end{itemize}
+    \end{frame}
+
+    \section{Main-Window / Plot-Window}
+    \begin{frame}
+	    \frametitle{Plot \& Tooltip}
+			\begin{itemize}
+			\setlength\itemsep{1em}
+			\item Darstellung der Datentupel im YX-Punktediagramm
+			\item Mausberührung löst einen Tooltip aus
+			\end{itemize}
+    \end{frame}
+
+    \section{Main-Window / Plot-Window}
+    \begin{frame}
+			\frametitle{Markieren \& Löschfunktion}
+			\begin{itemize}
+				\setlength\itemsep{1em}
+				\item Punkteauswahl im Plot mit der Maus
+				\item Tooltip zeigt Summe, Median, Mittelwert und Varianz
+				\item ''Delete''-Knopf löscht ausgewählte Punktemenge
+			\end{itemize}
+    \end{frame}
+    
+    \section{Main-Window / Plot-Window}
+    \begin{frame}
+			\frametitle{Undo-Funktion}
+			\begin{itemize}
+				\setlength\itemsep{1em}
+				\item Änderungen werden rückgängig gemacht
+				\item Plot wird neu gezeichnet
+				\item Datensatz wird entsprechend angepasst
+			\end{itemize}
+    \end{frame}
+
+
+    \section{Main-Window / Plot-Window}
+    \begin{frame}
+			\frametitle{FitLine \& Regressionsgeraden}
+			\begin{itemize}
+				\setlength\itemsep{1em}
+				\item Berechnung der FitLine mit Hilfe der Least-Square Methode
+				\item aktualisiere Regressionsgraph bei Änderung der Auswahl
+				\item Füge zwei weitere Geraden mit Parametern ein, zu denen die Fehlerspanne addiert bzw. subtrahiert wird
+			\end{itemize}
+    \end{frame}
+
+
+%    \section{Aufgabe 4}
+%    \begin{frame}[containsverbatim]
+%    	\frametitle{Explorationsloop}
+%    	\begin{itemize}
+%    		\item
+%    	\end{itemize}
+%    \end{frame}
+
+    \section{Filter-Window}
+    \begin{frame}
+			\frametitle{Filtern nach Tag}
+			\begin{itemize}
+				\setlength\itemsep{1em}
+				\item Wähle Monat und Tag im entsprechenden Baum aus
+				\item Bei Bestätigung wird der dazugehörige Datensatz im Plot dargestellt
+			\end{itemize}
+    \end{frame}
+    
+    \section{Filter-Window}
+    \begin{frame}
+			\frametitle{Filtern im Intervall }
+			\begin{itemize}
+				\setlength\itemsep{1em}
+				\item Wähle Start- und Enddatum via Slider
+				\item Bei Bestätigung wird dazugehörige der Datensatz im Plot dargestellt
+			\end{itemize}
+    \end{frame}
+    
+    \section{Histogramm}
+    \begin{frame}
+			\frametitle{Datenmenge bestimmen}
+			\begin{itemize}
+				\setlength\itemsep{1em}
+				\item Outlier im XY-Punktediagramm bestimmen und markieren				
+				\item Histogrammdarstellung in ''Analytics''  wählen (Tages-, Monats- oder Jahresgang)
+			\end{itemize}
+    \end{frame}
+    
+    \section{Histogramm}
+    \begin{frame}
+			\frametitle{Histogramm-Optionen}
+			\begin{itemize}
+				\setlength\itemsep{1em}
+				\item Im Histogramm-Dialog Einstellungen auswählen
+				\begin{itemize}
+					\setlength\itemsep{1em}
+					\item Intervallgröße festlegen 
+					\item Monat wählen
+					\item Darzustellende Partikel bestimmen				
+				\end{itemize}
+				\item Tooltip erscheint bei Berührung einer Bar im Histogramm				
+			\end{itemize}
+    \end{frame}
+
+\end{document}

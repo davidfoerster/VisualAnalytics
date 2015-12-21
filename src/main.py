@@ -79,6 +79,8 @@ class Plot:
 		if data is not None:
 			self.plotFilterRange(data['small'], data['large'], data['date'], autoDownsample = True)
 
+		self.histoInterval = None
+
 
 	def onMove(self, scene_pos):
 		pos = self.scatterpoints.mapFromScene(scene_pos)
@@ -366,7 +368,7 @@ class Plot:
 
 
 	def activateButtonHistogram(self, *args):
-		if len(self.scatterpoints.selection) > 0:
+		if (len(self.scatterpoints.selection) > 0) & (self.histoInterval != None):
 			self.form.btnHistogram.setEnabled(True)
 			self.form.btnDelete.setEnabled(True)
 
@@ -385,13 +387,13 @@ class Plot:
 			self.form.action_Jahresverteilung.setChecked(False)
 			self.form.action_Monatsverteilung.setChecked(False)
 		if isChecked:
-			self.HistoInterval = interval
+			self.histoInterval = interval
 			self.activateButtonHistogram(self.scatterpoints.selection)
 		else:
 			self.form.btnHistogram.setEnabled(False)
 
 	def onHistogram(self,):
-		self.histogram.onHistogram(self.HistoInterval, self.scatterpoints.selection)
+		self.histogram.onHistogram(self.histoInterval, self.scatterpoints.selection)
 
 	def plotFilterRange(self, small, large, dates, **kwargs):
 		self.form = MainWindow()
@@ -425,14 +427,13 @@ class Plot:
 		self.form.btnUndo.clicked.connect(self.undoFunction)
 
 
-		#self.form.btnHistogram.clicked.connect(functools.partial(self.histogram.onHistogram ,interval, self.scatterpoints.selection))
 		self.form.btnHistogram.clicked.connect(self.onHistogram)
 		self.form.actionFitLine.triggered.connect(self._update_regression_line)
 		self.form.actionFitCubic.triggered.connect(self.fitCubic)
 		self.form.action_Monatsverteilung.triggered.connect(functools.partial(self.setHistogramInterval, "month"))
 		self.form.action_Jahresverteilung.triggered.connect(functools.partial(self.setHistogramInterval, "year"))
 		self.form.action_Tagesverteilung.triggered.connect(functools.partial(self.setHistogramInterval, "day"))
-		self.scatterpoints.selection.change_listeners += (self._update_regression_line, self.fitCubic) #self.activateButtonHistogram)#, self.histogram.paintHistogram)
+		self.scatterpoints.selection.change_listeners += (self._update_regression_line, self.fitCubic, self.activateButtonHistogram)
 
 		#Aktivieren des Undo-Buttons
 		if self.stack.isEmpty():
