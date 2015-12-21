@@ -1,0 +1,6 @@
+ - Workaround zur Aktivierung des Histogramms im Tagesgang:
+
+    1. Den Menüpunkt "Analytics → Monatsverteilung" auswählen und wieder abwählen.
+    2. Unter dem Streudiagramm den Button "Histogramm" anklicken.
+    3. Histogrammparameter im Dialog auswählen.
+    4. Button "Paint" anklicken, um das Histogramm zu zeichnen.
