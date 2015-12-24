@@ -371,6 +371,8 @@ class Plot:
 		if (len(self.scatterpoints.selection) > 0) & (self.histoInterval != None):
 			self.form.btnHistogram.setEnabled(True)
 			self.form.btnDelete.setEnabled(True)
+		elif (len(self.scatterpoints.selection) > 0):
+			self.form.btnDelete.setEnabled(True)
 
 	def setHistogramInterval(self, interval):
 		isChecked = False
