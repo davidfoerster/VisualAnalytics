@@ -56,18 +56,17 @@
         
     \section{Skalierbarkeit}
     \begin{frame}
-			\frametitle{Skalierbarkeit -- Momente}
+			\frametitle{Skalierbarkeit}
 			\begin{itemize}
 				\setlength\itemsep{1em}
-				\item 
-			\end{itemize}
-    \end{frame}
-    
-    \begin{frame}
-			\frametitle{Skalierbarkeit -- visuelle Kodierung}
-			\begin{itemize}
-				\setlength\itemsep{1em}
-				\item 
+				\item Aggregation von Datenpunkten in Flächen
+				\item Punktanzahl: Radius
+				\item Mittelwert: Kreiszentrum
+				\item Varianz: Farbskala (algorithmisch angepasst)
+					\begin{itemize}
+						\item erfordert neue graphische Variable(n) für Klassenzugehörigkeit
+					\end{itemize}
+				\item geschätzter Arbeitsaufwand: 10\,h
 			\end{itemize}
     \end{frame}
     
@@ -76,7 +75,33 @@
 			\frametitle{Semantischer Zoom}
 			\begin{itemize}
 				\setlength\itemsep{1em}
-				\item 
+				\item Ideen zur Kodierung zusätzliche Dimensionen bei angemessener Vergrößerungsstufe, z.\,B.
+					\begin{itemize}
+						\item farbliche Zeitskala ordnet Punkte im Jahresverlauf ein
+						\item Luftfeuchtigkeit (Farbe oder Form)
+						\item vergangene Zeit seit Anfang/Ende/Mitte eines \emph{wet deposit event} (Farbe oder Form)
+					\end{itemize}
+				\item gesch.\ Aufwand: je 1--2\,h (ohne Datenaufbereitung)
+			\end{itemize}
+    \end{frame}
+    
+    \section{Erweiterung}
+    \begin{frame}
+			\frametitle{Erweiterung: Option 2}
+			\begin{itemize}
+				\setlength\itemsep{1em}
+				\item \emph{binning} je nach Größenklassenanzahl
+				\item Darstellung der Histogramme für verschiedener Zeitabschnitte
+					\begin{itemize}
+						\item in einem einzelnen Diagramm
+						\item als kleine Vielfache
+							\begin{itemize}
+								\item viel Spielraum für Größen- und Genauigkeitsstufen
+								\item achronologische Anordnung (Folge, Hierarchie) möglich, z.\,B. nach Momenten oder Ähnlichkeit (zu einer kanonischen Verteilung oder untereinander)
+							\end{itemize}
+						\item interaktiv im Zeitverlauf mit gleitendem Fenster
+					\end{itemize}
+				\item gesch.\ Aufwand: 4--6\,h je Darstellungstyp (ohne Datenaufbereitung)
 			\end{itemize}
     \end{frame}
 
