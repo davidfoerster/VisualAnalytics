@@ -7,6 +7,7 @@
 \usepackage{graphicx}
 \usepackage{color}
 \usepackage{listings}
+\usepackage[absolute,overlay]{textpos}
 \usepackage{lmodern}
 \usepackage[T1]{fontenc}
 \usepackage[utf8x]{inputenc}
@@ -36,7 +37,8 @@
 	otherkeywords={
 		None,False,True,
 		self,
-		bytes}
+		bytes
+	}
 }
 
 \newcommand{\wholeslidegraphics}[1]{
@@ -44,6 +46,16 @@
 		\includegraphics[width=0.90\textwidth,height=0.95\textheight,keepaspectratio]{#1}
 	\end{center}
 }
+\newcommand{\graphicssource}[1]{
+	\begin{textblock*}{4cm}(8.7cm,8.6cm)
+		\begin{beamercolorbox}[ht=0.5cm,right]{framesource}
+				\usebeamerfont{framesource}\usebeamercolor[fg]{framesource} Quelle: {#1}
+		\end{beamercolorbox}
+	\end{textblock*}
+}
+
+\setbeamercolor{framesource}{fg=gray}
+\setbeamerfont{framesource}{size=\tiny}
 
 % meta informations for title page
 \title{Übung 5}
@@ -55,99 +67,109 @@
 
 \begin{document}
 
-    \begin{frame}
-        \titlepage
-    \end{frame}
-    \logo % logo only appears on title page
+\begin{frame}
+		\titlepage
+\end{frame}
+\logo % logo only appears on title page
 
-    \section{Skalierbarkeit}
-    \begin{frame}
-			\frametitle{Skalierbarkeit: Kreise}
+\section{Skalierbarkeit}
+\begin{frame}
+	\frametitle{Skalierbarkeit: Kreise}
+	\begin{itemize}
+		\setlength\itemsep{1em}
+		\item Aggregation von Datenpunkten in \emph{runden} Flächen
+		\item Punktanzahl: Radius
+		\item Mittelwert: Zentrum
+		\item Varianz: Farbskala (algorithmisch angepasst)
 			\begin{itemize}
-				\setlength\itemsep{1em}
-				\item Aggregation von Datenpunkten in \emph{runden} Flächen
-				\item Punktanzahl: Radius
-				\item Mittelwert: Zentrum
-				\item Varianz: Farbskala (algorithmisch angepasst)
+				\item erfordert neue graphische Variable(n) für Klassenzugehörigkeit
+			\end{itemize}
+		\item geschätzter Arbeitsaufwand: 10\,h
+	\end{itemize}
+\end{frame}
+\begin{frame}
+	\wholeslidegraphics{scatter-plot-weighted}
+	\graphicssource{[STATA]}
+\end{frame}
+
+\begin{frame}
+	\frametitle{Skalierbarkeit: Parkett}
+	\begin{itemize}
+		\setlength\itemsep{1em}
+		\item Aggregation von Datenpunkten in \emph{platonischem Parkett}
+		\item Punktanzahl: Farbintensität/Helligkeit
+		\item Mittelwert: Zentrum
+		\item Varianz: Farbwert
+		\item geschätzter Arbeitsaufwand: 10\,h
+	\end{itemize}
+\end{frame}
+\begin{frame}
+	\wholeslidegraphics{scatter-plot-compressed}
+	\graphicssource{[Qlik]}
+\end{frame}
+\begin{frame}
+	\wholeslidegraphics{scatter-heat-plot}
+	\graphicssource{[Gib]}
+\end{frame}
+
+\section{Semantischer Zoom}
+\begin{frame}
+	\frametitle{Semantischer Zoom}
+	\begin{itemize}
+		\setlength\itemsep{1em}
+		\item Ideen zur Kodierung zusätzliche Dimensionen bei angemessener Vergrößerungsstufe, z.\,B.
+			\begin{itemize}
+				\item farbliche Zeitskala ordnet Punkte im Jahresverlauf ein
+				\item Luftfeuchtigkeit (Farbe oder Form)
+				\item vergangene Zeit seit Anfang/Ende/Mitte eines \emph{wet deposit event} (Farbe oder Form)
+			\end{itemize}
+		\item zusätzlich numerische Angabe (bei Parkettdarstellung)
+		\item gesch.\ Aufwand: je 1--2\,h (ohne Datenaufbereitung)
+	\end{itemize}
+\end{frame}
+\begin{frame}
+	\wholeslidegraphics{scatter-plot-semantic-zoom}
+	\graphicssource{[Qlik]}
+\end{frame}
+
+\section{Erweiterung: Option 2}
+\begin{frame}
+	\frametitle{Erweiterung: Option 2}
+	\begin{itemize}
+		\setlength\itemsep{1em}
+		\item \emph{binning} je nach Größenklassenanzahl
+		\item Darstellung der Histogramme für verschiedener Zeitabschnitte
+			\begin{itemize}
+				\item in einem einzelnen Diagramm
+				\item als kleine Vielfache
 					\begin{itemize}
-						\item erfordert neue graphische Variable(n) für Klassenzugehörigkeit
+						\item viel Spielraum für Größen- und Genauigkeitsstufen
+						\item achronologische Anordnung (Folge, Hierarchie) möglich, z.\,B. nach Momenten oder Ähnlichkeit (zu einer kanonischen Verteilung oder untereinander)
 					\end{itemize}
-				\item geschätzter Arbeitsaufwand: 10\,h
+				\item interaktiv im Zeitverlauf mit gleitendem Fenster
 			\end{itemize}
-    \end{frame}
-    \begin{frame}
-    	\wholeslidegraphics{scatter-plot-weighted}
-    \end{frame}
+		\item gesch.\ Aufwand: 4--6\,h je Darstellungstyp (ohne Datenaufbereitung)
+	\end{itemize}
+\end{frame}
+\begin{frame}
+	\wholeslidegraphics{overlay-histogram}
+	\graphicssource{[Mat]}
+\end{frame}
+\begin{frame}
+	\wholeslidegraphics{histogram-small-multiples}
+	\graphicssource{[Mey]}
+\end{frame}
 
-    \begin{frame}
-			\frametitle{Skalierbarkeit: Parkett}
-			\begin{itemize}
-				\setlength\itemsep{1em}
-				\item Aggregation von Datenpunkten in \emph{platonischem Parkett}
-				\item Punktanzahl: Farbintensität/Helligkeit
-				\item Mittelwert: Zentrum
-				\item Varianz: Farbwert
-				\item geschätzter Arbeitsaufwand: 10\,h
-			\end{itemize}
-    \end{frame}
-    \begin{frame}
-    	\wholeslidegraphics{scatter-plot-compressed}
-    \end{frame}
-    \begin{frame}
-    	\wholeslidegraphics{scatter-heat-plot}
-    \end{frame}
-
-    \section{Semantischer Zoom}
-    \begin{frame}
-			\frametitle{Semantischer Zoom}
-			\begin{itemize}
-				\setlength\itemsep{1em}
-				\item Ideen zur Kodierung zusätzliche Dimensionen bei angemessener Vergrößerungsstufe, z.\,B.
-					\begin{itemize}
-						\item farbliche Zeitskala ordnet Punkte im Jahresverlauf ein
-						\item Luftfeuchtigkeit (Farbe oder Form)
-						\item vergangene Zeit seit Anfang/Ende/Mitte eines \emph{wet deposit event} (Farbe oder Form)
-					\end{itemize}
-				\item zusätzlich numerische Angabe (bei Parkettdarstellung)
-				\item gesch.\ Aufwand: je 1--2\,h (ohne Datenaufbereitung)
-			\end{itemize}
-    \end{frame}
-    \begin{frame}
-    	\wholeslidegraphics{scatter-plot-semantic-zoom}
-    \end{frame}
-
-    \section{Erweiterung: Option 2}
-    \begin{frame}
-			\frametitle{Erweiterung: Option 2}
-			\begin{itemize}
-				\setlength\itemsep{1em}
-				\item \emph{binning} je nach Größenklassenanzahl
-				\item Darstellung der Histogramme für verschiedener Zeitabschnitte
-					\begin{itemize}
-						\item in einem einzelnen Diagramm
-						\item als kleine Vielfache
-							\begin{itemize}
-								\item viel Spielraum für Größen- und Genauigkeitsstufen
-								\item achronologische Anordnung (Folge, Hierarchie) möglich, z.\,B. nach Momenten oder Ähnlichkeit (zu einer kanonischen Verteilung oder untereinander)
-							\end{itemize}
-						\item interaktiv im Zeitverlauf mit gleitendem Fenster
-					\end{itemize}
-				\item gesch.\ Aufwand: 4--6\,h je Darstellungstyp (ohne Datenaufbereitung)
-			\end{itemize}
-    \end{frame}
-    \begin{frame}
-    	\wholeslidegraphics{overlay-histogram}
-    \end{frame}
-    \begin{frame}
-    	\wholeslidegraphics{histogram-small-multiples}
-    \end{frame}
-
-    \section{Bildquellen}
-    \begin{frame}
-    	\frametitle{Bildquellen}
-    	\begin{itemize}
-    		\item folgen \ldots
-    	\end{itemize}
-    \end{frame}
+\section{Bildquellen}
+\begin{frame}
+	\frametitle{Bildquellen}
+	\begin{itemize}
+		\item{[STATA] \href{http://www.stata.com/support/faqs/graphics/gph/graphdocs/scatterplot-with-weighted-markers/}{STATA FAQ}}
+		\item{[Qlik] \href{https://help.qlik.com/sense/2.1/en-US/online/Subsystems/Hub/Content/Visualizations/ScatterPlot/scatter-plot.htm}{Qlik Sense Help}}
+		\item{[Gib] \href{http://www.gibmetportal.gi/data/openair?build=scatterplot}{Gibraltar Meteorological Data Portal}}
+		\item{[Mat] \href{http://blogs.sas.com/content/graphicallyspeaking/2013/11/21/comparative-histograms/}{Graphically Speaking, 2013} (Matange, Satay)}
+		\item{[Mey] \href{http://viz.sdql.com/2014/10/31/small-multiples-starters-innings-pitched-for-each-mlb-teams-in-2013/}{Sports Data Visualization, 2013} (Meyer, Joe)}
+	\end{itemize}
+\end{frame}
 
 \end{document}
