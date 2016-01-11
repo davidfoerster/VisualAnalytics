@@ -39,6 +39,12 @@
 		bytes}
 }
 
+\newcommand{\wholeslidegraphics}[1]{
+	\begin{center}
+		\includegraphics[width=0.90\textwidth,height=0.95\textheight,keepaspectratio]{#1}
+	\end{center}
+}
+
 % meta informations for title page
 \title{Übung 5}
 \subtitle{Visual Analytics für raumzeitliche Daten}
@@ -53,15 +59,15 @@
         \titlepage
     \end{frame}
     \logo % logo only appears on title page
-        
+
     \section{Skalierbarkeit}
     \begin{frame}
-			\frametitle{Skalierbarkeit}
+			\frametitle{Skalierbarkeit: Kreise}
 			\begin{itemize}
 				\setlength\itemsep{1em}
-				\item Aggregation von Datenpunkten in Flächen
+				\item Aggregation von Datenpunkten in \emph{runden} Flächen
 				\item Punktanzahl: Radius
-				\item Mittelwert: Kreiszentrum
+				\item Mittelwert: Zentrum
 				\item Varianz: Farbskala (algorithmisch angepasst)
 					\begin{itemize}
 						\item erfordert neue graphische Variable(n) für Klassenzugehörigkeit
@@ -69,7 +75,28 @@
 				\item geschätzter Arbeitsaufwand: 10\,h
 			\end{itemize}
     \end{frame}
-    
+    \begin{frame}
+    	\wholeslidegraphics{scatter-plot-weighted}
+    \end{frame}
+
+    \begin{frame}
+			\frametitle{Skalierbarkeit: Parkett}
+			\begin{itemize}
+				\setlength\itemsep{1em}
+				\item Aggregation von Datenpunkten in \emph{platonischem Parkett}
+				\item Punktanzahl: Farbintensität/Helligkeit
+				\item Mittelwert: Zentrum
+				\item Varianz: Farbwert
+				\item geschätzter Arbeitsaufwand: 10\,h
+			\end{itemize}
+    \end{frame}
+    \begin{frame}
+    	\wholeslidegraphics{scatter-plot-compressed}
+    \end{frame}
+    \begin{frame}
+    	\wholeslidegraphics{scatter-heat-plot}
+    \end{frame}
+
     \section{Semantischer Zoom}
     \begin{frame}
 			\frametitle{Semantischer Zoom}
@@ -81,11 +108,15 @@
 						\item Luftfeuchtigkeit (Farbe oder Form)
 						\item vergangene Zeit seit Anfang/Ende/Mitte eines \emph{wet deposit event} (Farbe oder Form)
 					\end{itemize}
+				\item zusätzlich numerische Angabe (bei Parkettdarstellung)
 				\item gesch.\ Aufwand: je 1--2\,h (ohne Datenaufbereitung)
 			\end{itemize}
     \end{frame}
-    
-    \section{Erweiterung}
+    \begin{frame}
+    	\wholeslidegraphics{scatter-plot-semantic-zoom}
+    \end{frame}
+
+    \section{Erweiterung: Option 2}
     \begin{frame}
 			\frametitle{Erweiterung: Option 2}
 			\begin{itemize}
@@ -103,6 +134,20 @@
 					\end{itemize}
 				\item gesch.\ Aufwand: 4--6\,h je Darstellungstyp (ohne Datenaufbereitung)
 			\end{itemize}
+    \end{frame}
+    \begin{frame}
+    	\wholeslidegraphics{overlay-histogram}
+    \end{frame}
+    \begin{frame}
+    	\wholeslidegraphics{histogram-small-multiples}
+    \end{frame}
+
+    \section{Bildquellen}
+    \begin{frame}
+    	\frametitle{Bildquellen}
+    	\begin{itemize}
+    		\item folgen \ldots
+    	\end{itemize}
     \end{frame}
 
 \end{document}
