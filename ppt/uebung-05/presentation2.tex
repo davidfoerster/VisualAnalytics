@@ -1,0 +1,119 @@
+\documentclass{beamer}
+
+\usepackage{amsmath}
+\usepackage{amssymb}
+%\usepackage{textcomp}
+\usepackage[ngerman]{babel}
+\usepackage{graphicx}
+\usepackage{color}
+\usepackage{listings}
+\usepackage[absolute,overlay]{textpos}
+\usepackage{lmodern}
+\usepackage[T1]{fontenc}
+\usepackage[utf8x]{inputenc}
+
+\graphicspath{{./imgs/}}
+
+% customized theme
+\usetheme{CambridgeUS}
+\usecolortheme{whale}
+\beamertemplatenavigationsymbolsempty
+\setbeamertemplate{footline}[page number]
+\setbeamercolor{frametitle}{fg=white,bg=structure}
+\setbeamercolor{theorem}{fg=black,bg=structure!30}
+\setbeamercovered{transparent}
+
+\definecolor{mygreen}{rgb}{0, 0.6, 0}
+\definecolor{mymauve}{rgb}{0.58, 0, 0.82}
+
+\lstset{
+	language=Python,
+	breaklines=true,
+	tabsize=4,
+	%basicstyle=\ttfamily,
+	keywordstyle=\color{blue},
+	stringstyle=\color{mymauve},
+	commentstyle=\color{mygreen},
+	otherkeywords={
+		None,False,True,
+		self,
+		bytes
+	}
+}
+
+\newcommand{\wholeslidegraphics}[1]{
+	\begin{center}
+		\includegraphics[width=0.90\textwidth,height=0.95\textheight,keepaspectratio]{#1}
+	\end{center}
+}
+\newcommand{\graphicssource}[1]{
+	\begin{textblock*}{4cm}(8.7cm,8.6cm)
+		\begin{beamercolorbox}[ht=0.5cm,right]{framesource}
+				\usebeamerfont{framesource}\usebeamercolor[fg]{framesource} Quelle: {#1}
+		\end{beamercolorbox}
+	\end{textblock*}
+}
+
+\setbeamercolor{framesource}{fg=gray}
+\setbeamerfont{framesource}{size=\tiny}
+
+% meta informations for title page
+\title{Übung 5, Nachtrag}
+\subtitle{Visual Analytics für raumzeitliche Daten}
+\author{Christian Diehr \and Benjamin Drost \and David Foerster}
+\institute{Institut für Informatik\\Humboldt-Universität zu Berlin}
+\logo{\includegraphics[width=2cm,height=2cm]{../hulogo}}
+\date{19. Januar 2016}
+
+\begin{document}
+
+\begin{frame}
+		\titlepage
+\end{frame}
+\logo % logo only appears on title page
+
+\section{Erweiterung: Option 2}
+\begin{frame}
+	\frametitle{Zielstellung}
+	\begin{center}
+		\Large
+		Ähnlichkeitsanalyse von Korngrößenverteilungen verschiedener Signalepisoden
+	\end{center}
+\end{frame}
+
+\begin{frame}
+	\frametitle{Anforderungen/Bewertung}
+	\begin{description}
+		\item[(o)] muss
+		\item[(+)] soll
+		\item[(++)] kann
+		\item[(-)] soll nicht
+	\end{description}
+\end{frame}
+
+\begin{frame}
+	%\frametitle{Ähnlichkeitsanalyse von Korngrößenverteilungen verschiedener Signalepisoden}
+	\begin{itemize}
+		\setlength\itemsep{1em}
+		\item Darstellung als vielfache kleine Histogramme der Episoden
+		\item wählbares (+) oder adaptives (++) Binning der Korngrößen für verschiedene Histogrammgrößen
+    \item hierarchisches Clustering nach einem festen (+) oder einem wählbaren (++) Abstandsmaß
+    \item total geordnete, „lineare“ (o) oder hierarchische Anordnung (++) der Histogramme
+    \item Abstände zwischen Verteilungen werden nicht grafisch (z. B. durch Abstände zwischen Histogrammen) kodiert (-) sondern bestenfalls numerisch dargestellt
+    \item eine einzige Zeitleiste hebt farblich kodiert die relevanten Zeitausschnitte für jedes Histogramm hervor (+)
+	\end{itemize}
+\end{frame}
+\begin{frame}
+	\wholeslidegraphics{histogram-small-multiples}
+	\graphicssource{[Mey]}
+\end{frame}
+
+\section{Bildquellen}
+\begin{frame}
+	\frametitle{Bildquellen}
+	\begin{itemize}
+		\item{[Mey] \href{http://viz.sdql.com/2014/10/31/small-multiples-starters-innings-pitched-for-each-mlb-teams-in-2013/}{Sports Data Visualization, 2013} (Meyer, Joe)}
+	\end{itemize}
+\end{frame}
+
+\end{document}
