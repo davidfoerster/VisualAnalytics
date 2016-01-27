@@ -81,6 +81,13 @@
       </property>
      </widget>
     </item>
+    <item row="4" column="5">
+     <widget class="QPushButton" name="btnCluster">
+      <property name="text">
+       <string>Cluster</string>
+      </property>
+     </widget>
+    </item>
    </layout>
   </widget>
   <widget class="QMenuBar" name="menubar">
@@ -89,7 +96,7 @@
      <x>0</x>
      <y>0</y>
      <width>800</width>
-     <height>21</height>
+     <height>18</height>
     </rect>
    </property>
    <widget class="QMenu" name="menuAnalytics">

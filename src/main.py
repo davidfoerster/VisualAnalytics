@@ -12,6 +12,7 @@ from PyQt4.QtGui import *
 import window_ui
 import widgetwin_ui
 from histogram import HistogramWidget
+from cluster import ClusterWidget
 from tree_scatter_plot import SelectableScatterPlotItem
 import math_utils
 from pythonds.basic.stack import Stack
@@ -397,9 +398,13 @@ class Plot:
 	def onHistogram(self,):
 		self.histogram.onHistogram(self.histoInterval, self.scatterpoints.selection)
 
+	def onCluster(self,):
+		self.cluster.onCluster()
+
 	def plotFilterRange(self, small, large, dates, **kwargs):
 		self.form = MainWindow()
 		self.histogram = HistogramWidget(self.form.btnHistogram)
+		self.cluster = ClusterWidget(self.form.btnCluster)
 		# self.form.move(300, 300)
 		self.form.timeline.setScene(self.scene)
 		self.form.timeline.setSceneRect(0, 0, 710, 10)
@@ -430,6 +435,7 @@ class Plot:
 
 
 		self.form.btnHistogram.clicked.connect(self.onHistogram)
+		self.form.btnCluster.clicked.connect(self.onCluster)
 		self.form.actionFitLine.triggered.connect(self._update_regression_line)
 		self.form.actionFitCubic.triggered.connect(self.fitCubic)
 		self.form.action_Monatsverteilung.triggered.connect(functools.partial(self.setHistogramInterval, "month"))
