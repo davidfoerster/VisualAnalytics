@@ -3,18 +3,23 @@ import cluster_ui
 import os.path
 import csv
 import numpy as np
+import sklearn.cluster as cl
+import matplotlib.pyplot as plt
 
 _bindir = os.path.dirname(os.path.dirname(os.path.realpath(__file__)))
 csvpath = _bindir + '/data/dust-2014-grainsize.dat'
-grainsizes = np.array([])
+january_rows = 39388
+cols = 31
+grainsizes = np.empty([january_rows, cols])
+
 with open(csvpath, 'r') as csvfile:
 	csvreader = csv.reader(csvfile, delimiter=';')
 	next(csvfile)
-	rowindex = 1
+	rowindex = 0
 	for row in csvreader:
-		grainsizes.append([int(x) for x in row[1:]])
+		grainsizes[rowindex, :] = [int(x) for x in row[1:]]
 		rowindex += 1
-		if rowindex > 39388:  # whole january
+		if rowindex == january_rows-1:  # whole january
 			break
 
 
@@ -39,4 +44,13 @@ class ClusterWidget(QWidget, cluster_ui.Ui_Dialog):
 		self.wid.btnOk.clicked.connect(self.computeCluster)
 
 	def computeCluster(self):
-		pass
+		histogramCount = self.wid.histogramCountSpinBox.value()
+		timeInterval = self.wid.timeIntervalSpinBox.value()
+		meanGrainSizes = np.empty([int(january_rows/(60*timeInterval)), 31])
+		for r in range(0, meanGrainSizes.shape[0]-1):
+			meanGrainSizes[r, :] = np.mean(grainsizes[r*60*timeInterval:(r+1)*60*timeInterval-1,:], axis=0)
+
+		centroids = cl.k_means(meanGrainSizes, histogramCount)
+		fig = plt.figure(figsize=(10,10))
+		plt.bar(range(0,31), centroids[0][0])
+		plt.show()
