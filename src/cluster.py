@@ -68,6 +68,10 @@ class ClusterWidget(QWidget, cluster_ui.Ui_Dialog):
 		nrows = int(np.ceil(np.sqrt(histogramCount)))+1
 		ncols = int(np.ceil(histogramCount/nrows))
 		colors = get_colors(histogramCount)
+		# sort by luminance (http://stackoverflow.com/a/596243)
+		colors.sort(key=lambda rgb: 0.299*rgb[0] + 0.587*rgb[1] + 0.114*rgb[2])
+		# sort by lowest grain size
+		centroids = sorted(centroids, key=lambda c: c[0], reverse=True)
 
 		plt.figure(figsize=(15, 10))
 		for i in range(0, histogramCount):
