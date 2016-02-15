@@ -16,6 +16,8 @@ Voraussetzungen
      http://matplotlib.org/users/installing.html
    - pythonds (>= 1.0.1)
      https://pypi.python.org/pypi/pythonds
+   - scikit-learn (>= 0.17)
+     http://scikit-learn.org/stable/install.html
   
   In Ubuntu Trusty (14.04) sind folgende Pakete aus den Paketverzeichnissen
   erforderlich:
@@ -28,6 +30,8 @@ Voraussetzungen
   
    - "python3-scipy" aus Ubuntu Wily (https://launchpad.net/ubuntu/wily/+source/python-scipy)
    - "python3-pyqtgraph" aus Ubuntu Wily (https://launchpad.net/ubuntu/wily/+source/python-pyqtgraph)
+   - "python3-sklearn" und "python3-sklearn-lib" als Backport aus Ubuntu Xenial (group1@geom:~/deb-packages/)
+   - "pyhton3-joblib" aus Ubuntu Xenial (https://launchpad.net/ubuntu/xenial/+source/joblib)
 
   Erforderliche Pip-Pakete:
 
