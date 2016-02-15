@@ -69,7 +69,7 @@ class ClusterWidget(QWidget, cluster_ui.Ui_Dialog):
 		ncols = int(np.ceil(histogramCount/nrows))
 		colors = get_colors(histogramCount)
 
-		plt.figure(figsize=(10, 10))
+		plt.figure(figsize=(15, 10))
 		for i in range(0, histogramCount):
 			ax = plt.subplot2grid((nrows, ncols), np.unravel_index(i+ncols, (nrows, ncols)))
 			plt.bar(range(0, 31), centroids[i])
@@ -80,9 +80,9 @@ class ClusterWidget(QWidget, cluster_ui.Ui_Dialog):
 		scale = 1 - np.divide(np.amin(dists, axis=1), np.amax(dists, axis=1))
 
 		ax_line = plt.subplot2grid((nrows, ncols), (0, 0), colspan=ncols)
-		ax_line.set_xlim(0, meanGrainSizes.shape[0])
-		ax_line.set_ylim(0, 1)
+		ax_line.set_xlim(-.1, meanGrainSizes.shape[0]+.1)
+		ax_line.set_ylim(0, 1.1)
 		for r in range(0, meanGrainSizes.shape[0]-1):
-			plt.plot([r, 0], [r, 1], color=tuple(scale[labels[r]]*c for c in colors[labels[r]]))
+			plt.plot(r, scale[labels[r]], 'o', color=colors[labels[r]])
 
 		plt.show()
