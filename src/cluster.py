@@ -9,9 +9,9 @@ import matplotlib.pyplot as plt
 
 _bindir = os.path.dirname(os.path.dirname(os.path.realpath(__file__)))
 csvpath = _bindir + '/data/dust-2014-grainsize.dat'
-january_rows = 39388
+rows = 425397
 cols = 31
-grainsizes = np.empty([january_rows, cols])
+grainsizes = np.empty([rows, cols])
 
 with open(csvpath, 'r') as csvfile:
 	csvreader = csv.reader(csvfile, delimiter=';')
@@ -20,7 +20,7 @@ with open(csvpath, 'r') as csvfile:
 	for row in csvreader:
 		grainsizes[rowindex, :] = [int(x) for x in row[1:]]
 		rowindex += 1
-		if rowindex == january_rows-1:  # whole january
+		if rowindex == rows-1:  # whole january
 			break
 
 
@@ -58,7 +58,7 @@ class ClusterWidget(QWidget, cluster_ui.Ui_Dialog):
 	def computeCluster(self):
 		histogramCount = self.wid.histogramCountSpinBox.value()
 		timeInterval = self.wid.timeIntervalSpinBox.value()
-		meanGrainSizes = np.empty([int(january_rows/(60*timeInterval)), 31])
+		meanGrainSizes = np.empty([int(rows/(60*timeInterval)), 31])
 		for r in range(0, meanGrainSizes.shape[0]-1):
 			meanGrainSizes[r, :] = np.mean(grainsizes[r*60*timeInterval:(r+1)*60*timeInterval-1, :], axis=0)
 
@@ -83,6 +83,6 @@ class ClusterWidget(QWidget, cluster_ui.Ui_Dialog):
 		ax_line.set_xlim(-.1, meanGrainSizes.shape[0]+.1)
 		ax_line.set_ylim(0, 1.1)
 		for r in range(0, meanGrainSizes.shape[0]-1):
-			plt.plot(r, scale[labels[r]], 'o', color=colors[labels[r]])
+			plt.plot(r, scale[labels[r]], 'o', lw = 0, ms = timeInterval/5, color=colors[labels[r]])
 
 		plt.show()

@@ -26,7 +26,7 @@
     <number>1</number>
    </property>
    <property name="maximum">
-    <number>9</number>
+    <number>16</number>
    </property>
   </widget>
   <widget class="QLabel" name="histogramCountLabel">
@@ -68,7 +68,7 @@
     <number>1</number>
    </property>
    <property name="maximum">
-    <number>24</number>
+    <number>168</number>
    </property>
   </widget>
   <widget class="QPushButton" name="btnOk">
