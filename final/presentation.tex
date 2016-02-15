@@ -1,0 +1,90 @@
+\documentclass{beamer}
+
+\usepackage{amsmath}
+\usepackage{amssymb}
+%\usepackage{textcomp}
+\usepackage[ngerman]{babel}
+\usepackage{caption}
+\usepackage{graphicx}
+\usepackage{color}
+\usepackage{listings}
+\usepackage{lmodern}
+\usepackage[T1]{fontenc}
+\usepackage[utf8x]{inputenc}
+
+\graphicspath{{./imgs/}}
+
+% customized theme
+\usetheme{CambridgeUS}
+\usecolortheme{whale}
+\beamertemplatenavigationsymbolsempty
+\setbeamertemplate{footline}[page number]
+\setbeamercolor{frametitle}{fg=white,bg=structure}
+\setbeamercolor{theorem}{fg=black,bg=structure!30}
+\setbeamercovered{transparent}
+
+\definecolor{mygreen}{rgb}{0, 0.6, 0}
+\definecolor{mymauve}{rgb}{0.58, 0, 0.82}
+
+\lstset{
+	language=Python,
+	breaklines=true,
+	tabsize=4,
+	%basicstyle=\ttfamily,
+	keywordstyle=\color{blue},
+	stringstyle=\color{mymauve},
+	commentstyle=\color{mygreen},
+	otherkeywords={
+		None,False,True,
+		self,
+		bytes}
+}
+
+% meta informations for title page
+\title{Abschlusspräsentation}
+\subtitle{Visual Analytics für raumzeitliche Daten}
+\author{Christian Diehr \and Benjamin Drost \and David Foerster}
+\institute{Institut für Informatik\\Humboldt-Universität zu Berlin}
+\logo{\includegraphics[width=2cm,height=2cm]{imgs/hulogo.pdf}}
+\date{16. Februar 2016}
+
+\begin{document}
+
+    \begin{frame}
+        \titlepage
+    \end{frame}
+    \logo % logo only appears on title page
+        
+    \section{Clustering}
+	% Erklären, was Clustering ist
+	% Erklären, wie der kMeans-Algorithmus funktioniert
+	% KMeans einfach, häufig verwendet
+	% Abhängigkeit von gewähltem Startpunkt als Nachteil
+    \begin{frame}
+			\frametitle{k-Means-Algorithmus}
+			\begin{figure}
+				\centering\includegraphics[width=.7\textwidth]{kmeans.png}
+				\setbeamertemplate{caption}{\raggedright\insertcaption\par}
+				\caption{Quelle: pypr.sourceforge.net/\_images}
+				\setbeamertemplate{caption}[default]
+			\end{figure}
+    \end{frame}
+    
+%    \section{Histogramm}
+%    \begin{frame}
+%			\frametitle{Histogramm-Optionen}
+%			\begin{itemize}
+%				\setlength\itemsep{1em}
+%				\item Im Histogramm-Dialog Einstellungen auswählen
+%				\begin{itemize}
+%					\setlength\itemsep{1em}
+%					\item Intervallgröße festlegen 
+%					\item Monat wählen
+%					\item Darzustellende Partikel bestimmen				
+%				\end{itemize}
+%				\item Darstellung per matplotlib
+%				\item Tooltip erscheint bei Berührung einer Bar im Histogramm				
+%			\end{itemize}
+%    \end{frame}
+
+\end{document}
