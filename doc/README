@@ -6,16 +6,16 @@ Voraussetzungen
     - GNU Make
 
 - externe Bibliotheken & Versionen
-    - NumPy (>= 1.8.1) und SciPy (>= 0.14)
-      https://www.scipy.org/scipylib/download.html
-    - PyQt4 (>= 4.10)
-      https://www.riverbankcomputing.com/software/pyqt/download
-    - PyQtGraph (>= 0.9.10)
-      http://www.pyqtgraph.org/downloads/
-	- Matplotlib (>= 1.5.0)
-	  http://matplotlib.org/users/installing.html
-	 - pythonds (>= 1.0.1)
-	 https://pypi.python.org/pypi/pythonds
+   - NumPy (>= 1.8.1) und SciPy (>= 0.14)
+     https://www.scipy.org/scipylib/download.html
+   - PyQt4 (>= 4.10)
+     https://www.riverbankcomputing.com/software/pyqt/download
+   - PyQtGraph (>= 0.9.10)
+     http://www.pyqtgraph.org/downloads/
+   - Matplotlib (>= 1.5.0)
+     http://matplotlib.org/users/installing.html
+   - pythonds (>= 1.0.1)
+     https://pypi.python.org/pypi/pythonds
   
   In Ubuntu Trusty (14.04) sind folgende Pakete aus den Paketverzeichnissen
   erforderlich:
