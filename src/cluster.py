@@ -65,8 +65,8 @@ class ClusterWidget(QWidget, cluster_ui.Ui_Dialog):
 		kmeans = cl.KMeans(n_clusters=histogramCount)
 		kmeans.fit(meanGrainSizes)
 		centroids = kmeans.cluster_centers_
-		nrows = int(np.ceil(np.sqrt(histogramCount)))+1
-		ncols = int(np.ceil(histogramCount/nrows))
+		ncols = int(np.ceil(np.sqrt(histogramCount)))
+		nrows = int(np.ceil(histogramCount/ncols))+1
 		colors = get_colors(histogramCount)
 		# sort by luminance (http://stackoverflow.com/a/596243)
 		colors.sort(key=lambda rgb: 0.299*rgb[0] + 0.587*rgb[1] + 0.114*rgb[2])
@@ -75,7 +75,7 @@ class ClusterWidget(QWidget, cluster_ui.Ui_Dialog):
 
 		plt.figure(figsize=(15, 10))
 		for i in range(0, histogramCount):
-			ax = plt.subplot2grid((nrows, ncols), np.unravel_index(i+ncols, (nrows, ncols)))
+			ax = plt.subplot2grid((nrows, ncols), np.unravel_index(i+ncols, (nrows, ncols), order='C'))
 			plt.bar(range(0, 31), centroids[i])
 			ax.set_axis_bgcolor(tuple(colors[i]))
 
