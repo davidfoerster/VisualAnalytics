@@ -82,6 +82,9 @@ class ClusterWidget(QWidget, cluster_ui.Ui_Dialog):
 		ax_line = plt.subplot2grid((nrows, ncols), (0, 0), colspan=ncols)
 		ax_line.set_xlim(-.1, meanGrainSizes.shape[0]+.1)
 		ax_line.set_ylim(0, 1.1)
+		ax_line.set_xticks(range(0, meanGrainSizes.shape[0]-1, int((meanGrainSizes.shape[0]-1)/11)))
+		ax_line.set_xticklabels(('Jan', 'Feb', 'Mär', 'Apr', 'Mai', 'Jun', 'Jul', 'Aug', 'Sep', 'Okt', 'Nov', 'Dez'))
+
 		for r in range(0, meanGrainSizes.shape[0]-1):
 			plt.plot(r, scale[labels[r]], 'o', lw = 0, ms = timeInterval/5, color=colors[labels[r]])
 
