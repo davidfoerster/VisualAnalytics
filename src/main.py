@@ -26,7 +26,7 @@ def _main(*args):
 	Weil die Ladedauer sehr hoch ist, wird erstmal nur der Datensatz mit allen Messdaten aus Januar verwendet. Beachtet dies bei den Filtern.
 	"""
 
-	data_path = args[0] if args else (_bindir + '/data/daten-klein.dat')
+	data_path = args[0] if args else (_bindir + '/data/dust-2014.dat')
 	data = np.genfromtxt(data_path,
 		dtype = [('date', '|S19'), ('small', 'i8'), ('large', 'i8')], delimiter = ';',
 		names = ["date", "small", "large"])
@@ -238,21 +238,12 @@ class Plot:
 
 
 	def onDelete(self):
-		if len(self.scatterpoints.selection) > 0:
-			self.stack.push(self.new_data)
-			index = 0
-			index_diff = 0
-			for s in self.new_data:
-				for p in self.scatterpoints.selection.copy():
-					r = p-index_diff #Index-Differenz beim Löschen von Elementen aus new_data und p
-					if self.new_data[r] == s:
-						index_diff = index_diff + 1
-						self.new_data = np.delete(self.new_data, index)
-						index = index - 1  # new_data wird kleiner, darum darf der Index nicht wachsen.
-						self.scatterpoints.selection.remove(p)
-				index = index + 1
-			self.data = self.new_data  # somit kann weiterhin mit data['small'] und data['large'] gearbeitet werden.
-			self.plotFilterRange(self.data['small'], self.data['large'], self.data['date'], autoDownsample = True)
+		if not self.scatterpoints.selection:
+			return
+		self.stack.push(self.new_data)
+		self.data = self.new_data = np.delete(self.new_data, tuple(self.scatterpoints.selection))
+		self.scatterpoints.clear()
+		self.plotFilterRange(self.data['small'], self.data['large'], self.data['date'], autoDownsample = True)
 
 
 	def undoFunction(self):
