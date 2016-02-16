@@ -85,18 +85,15 @@ class TreeScatterPlotItem(pg.ScatterPlotItem):
 		if rect.isNull():
 			return tuple()
 
-		diag_length = math.sqrt(rect.width()**2 + rect.height()**2)
+		radius = max(abs(rect.width()), abs(rect.height())) / 2
 		center = rect.center()
-		candidates = self.data_tree.query_ball_point((center.x(), center.y()), diag_length * 0.5)
+		center = (center.x(), center.y())
+		candidates = self.data_tree.query_ball_point(center, radius, 1)
 		return filter(lambda p_idx: self._isPointIn(p_idx, rect), candidates)
 
 
 	def _isPointIn(self, p_idx, rect):
-		if not (0 <= p_idx < self.data.size):
-			return False
-
-		point = self.data_tree.data[p_idx]
-		return rect.contains(point[0], point[1])
+		return 0 <= p_idx < self.data.size and rect.contains(*self.data_tree.data[p_idx])
 
 
 class SelectableScatterPlotItem(TreeScatterPlotItem):
