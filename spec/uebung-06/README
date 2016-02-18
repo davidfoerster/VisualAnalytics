@@ -1,0 +1,5 @@
+Benutzungshinweis:
+
+Die Staubkornzahlen in "dust-2014-grainsize.dat" sind von den größten zu den kleinsten kumuliert, was der Visual-Analytics-Prototyp jedoch nicht berücksichtigt. Deshalb sollten die Daten in dieser Datei mit dem Skript in "data/decumulate.py" zunächst vorverarbeitet werden. Beispiel:
+
+    ./data/decumulate.py dust-2014-grainsize.dat > data/dust-2014-grainsize.dat
